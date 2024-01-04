@@ -7,16 +7,7 @@ import { UserBookingsProps } from '@/Types/adminBooking';
 import { DataTable } from '@/components/BookingTable/data-table';
 import { columns } from '@/components/BookingTable/columns';
 import { useEffect, useState } from 'react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { deleteEntry } from '@/states/store';
 import { useAtom } from 'jotai';
 import { Bookings } from '@/Types/Bookings';
@@ -285,32 +276,17 @@ export default function Booking({ UserBookings, Bookings }: { UserBookings: User
           <section>
             <article>
               <h3>Bookinger i dag</h3>
-              <div className='bg-contrastCol mt-8 p-4 lg:block flex align-middle justify-center bookingTable'>
-                {bookingsToday().length < 1 ? (
-                  <p className='m-0'>Ingen bookinger i dag.</p>
-                ) : (
-                  <DataTable
-                    columns={columns}
-                    data={bookingsToday()}
-                    udløbne={false}
-                  />
-                )}
-              </div>
+              <div className='bg-contrastCol mt-8 p-4 block '>{bookingsToday().length < 1 ? <p className='m-0'>Ingen bookinger i dag.</p> : <DataTable columns={columns} data={bookingsToday()} udløbne={false} />}</div>
             </article>
             <article>
               <h3>Alle bookinger</h3>
               {/* <DataTable columns={columns} data={futureBookings()} udløbne={true} onCheckedChange={(e: any) => isChecked(e)} /> */}
-              <div className='bg-contrastCol mt-8 p-4 lg:block flex align-middle justify-center'>
+              <div className='bg-contrastCol mt-8 p-4 block'>
                 {userBookings.length < 1 ? (
                   <p className='m-0'>Ingen bookinger.</p>
                 ) : (
                   <>
-                    <DataTable
-                      columns={columns}
-                      data={showExpiredBookings ? allBookings() : futureBookings()}
-                      udløbne={true}
-                      onCheckedChange={() => setShowExpiredBookings(!showExpiredBookings)}
-                    />
+                    <DataTable columns={columns} data={showExpiredBookings ? allBookings() : futureBookings()} udløbne={true} onCheckedChange={() => setShowExpiredBookings(!showExpiredBookings)} />
                   </>
                 )}
               </div>
@@ -319,16 +295,11 @@ export default function Booking({ UserBookings, Bookings }: { UserBookings: User
 
           <div className='flex justify-center'>
             <div className='spacer w-full'>
-              <AlertDialog
-                open={openDialogAlert}
-                onOpenChange={setOpenDialogAlert}
-              >
+              <AlertDialog open={openDialogAlert} onOpenChange={setOpenDialogAlert}>
                 <AlertDialogContent className=' w-[80vw] max-w-[800px] border-accentCol'>
                   <AlertDialogHeader>
                     <AlertDialogTitle>Er du sikker på at du vil slette?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Dette vil slette den valgte booking, og kan ikke fortrydes. Er du sikker på at du vil gennemføre handligen?
-                    </AlertDialogDescription>
+                    <AlertDialogDescription>Dette vil slette den valgte booking, og kan ikke fortrydes. Er du sikker på at du vil gennemføre handligen?</AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel onClick={() => setSendID(null)}>Fortryd</AlertDialogCancel>
