@@ -10,15 +10,7 @@ import * as z from 'zod';
 import InputMask from 'react-input-mask';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Layout } from '@/Layout';
-import {
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormDescription,
-  FormMessage,
-  FormField,
-  Form,
-} from '@/components/ui/form';
+import { FormControl, FormItem, FormLabel, FormDescription, FormMessage, FormField, Form } from '@/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UserBooking } from '@/Types/calendar';
 import { formattedDate } from '@/calendarFunctions/calendarFunctions';
@@ -37,10 +29,7 @@ interface BookingProps {
   bookingOverview: Array<Bookings>;
 }
 
-export const BookingForm: React.FC<BookingProps> = ({
-  userChoices,
-  bookingOverview,
-}) => {
+export const BookingForm: React.FC<BookingProps> = ({ userChoices, bookingOverview }) => {
   const [supabaseError, setSupabaseError] = useState<string | null>(null);
   const [isBookingValid, setIsBookingValid] = useState<boolean | null>(null);
   const [bookingComplete, setBookingComplete] = useAtom(bookingCompleteAtom);
@@ -78,14 +67,7 @@ export const BookingForm: React.FC<BookingProps> = ({
     navn: z.string().min(1, {
       message: 'Dit navn skal minimum have 1 tegn ',
     }),
-    telefon: z
-      .union([
-        z
-          .string()
-          .length(0, { message: 'Indtast venligst et gyldigt telefonnummer' }),
-        z.string().min(8),
-      ])
-      .optional(),
+    telefon: z.union([z.string().length(0, { message: 'Indtast venligst et gyldigt telefonnummer' }), z.string().min(8)]).optional(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -141,10 +123,7 @@ export const BookingForm: React.FC<BookingProps> = ({
   };
 
   const sendToSupabase = async (object: any) => {
-    const { data, error } = await supabase
-      .from('Bookings')
-      .insert([object])
-      .select();
+    const { data, error } = await supabase.from('Bookings').insert([object]).select();
   };
 
   const basePc = [
@@ -164,20 +143,12 @@ export const BookingForm: React.FC<BookingProps> = ({
   ];
 
   const createBooking = (amount: number, alreadyDate: boolean) => {
-    const startToBook = basePc.findIndex(
-      (index) => index.time === userChoices?.startTime?.time
-    );
-    const endToBook = basePc.findIndex(
-      (index) => index.time === userChoices?.endTime?.time
-    );
-    const timesToBook = basePc
-      .slice(startToBook, endToBook + 1)
-      .map((time) => time.time);
+    const startToBook = basePc.findIndex((index) => index.time === userChoices?.startTime?.time);
+    const endToBook = basePc.findIndex((index) => index.time === userChoices?.endTime?.time);
+    const timesToBook = basePc.slice(startToBook, endToBook + 1).map((time) => time.time);
 
     if (!alreadyDate) {
-      const bookedPcs: Array<
-        Array<{ time: string; booked: boolean; bookedCount: number }>
-      > = [];
+      const bookedPcs: Array<Array<{ time: string; booked: boolean; bookedCount: number }>> = [];
 
       for (let i = 1; i < 6; i++) {
         if (i <= amount) {
@@ -185,10 +156,7 @@ export const BookingForm: React.FC<BookingProps> = ({
 
           bookedPcs.push(
             basePc.map((timeSlot) => {
-              if (
-                timesToBook.includes(timeSlot.time) &&
-                timeSlot.booked === false
-              ) {
+              if (timesToBook.includes(timeSlot.time) && timeSlot.booked === false) {
                 //console.log('im included: ', timeSlot.time);
 
                 return { time: timeSlot.time, booked: true, bookedCount: 0 };
@@ -228,13 +196,7 @@ export const BookingForm: React.FC<BookingProps> = ({
         }
       };
 
-      const tempBooking = [
-        existingDay()?.PC1,
-        existingDay()?.PC2,
-        existingDay()?.PC3,
-        existingDay()?.PC4,
-        existingDay()?.PC5,
-      ];
+      const tempBooking = [existingDay()?.PC1, existingDay()?.PC2, existingDay()?.PC3, existingDay()?.PC4, existingDay()?.PC5];
 
       let updatedExistingDay;
       for (let i = 1; i < 6; i++) {
@@ -254,10 +216,7 @@ export const BookingForm: React.FC<BookingProps> = ({
                 //console.log('timeSlot', timeSlot);
 
                 //@ts-ignore
-                if (
-                  timesToBook.includes(timeSlot.time) &&
-                  timeSlot.booked === false
-                ) {
+                if (timesToBook.includes(timeSlot.time) && timeSlot.booked === false) {
                   //@ts-ignore
                   //console.log('im included: ', timeSlot.time);
                   //@ts-ignore
@@ -295,11 +254,7 @@ export const BookingForm: React.FC<BookingProps> = ({
   };
 
   async function sendUpdateToSupabase(supabaseObject: any) {
-    const { data, error } = await supabase
-      .from('Bookings')
-      .update([supabaseObject])
-      .eq('id', supabaseObject.id)
-      .select();
+    const { data, error } = await supabase.from('Bookings').update([supabaseObject]).eq('id', supabaseObject.id).select();
     //console.log('$123', data);
     //console.log('pusherror', error);
   }
@@ -393,40 +348,29 @@ export const BookingForm: React.FC<BookingProps> = ({
 
   return (
     <>
-      <article
-        id='contactForm'
-        className='w-full'
-      >
+      <article id='contactForm' className='w-full'>
         <div className='bg-contrastCol mt-6 p-4 lg:block '>
           <h4 className='mt-0'>Kontaktoplysnigner</h4>
-          <p>
-            Så mangler vi bare de sidste detaljer for at din booking er klaret!
-            Udfyld navn, email og telefonnummer for at fuldføre din reservation.
-          </p>
+          <p>Så mangler vi bare de sidste detaljer for at din booking er klaret! Udfyld navn, email og telefonnummer for at fuldføre din reservation.</p>
           <h4>Booking Oplysninger</h4>
 
           <p className='flex flex-row align-middle'>
-            <FaCalendarAlt className='inline-block mr-3 text-accentCol' />{' '}
-            <span>{formattedDate(dato as string)}</span>
+            <FaCalendarAlt className='inline-block mr-3 text-accentCol' /> <span>{formattedDate(dato as string)}</span>
           </p>
           <p className='flex flex-row align-middle'>
-            <FaUserGroup className='inline-block mr-3 text-accentCol' />{' '}
-            <span>{antal} computere</span>
+            <FaUserGroup className='inline-block mr-3 text-accentCol' /> <span>{antal} computere</span>
           </p>
           <p className='flex flex-row align-middle'>
             <IoTime className='inline-block mr-3 text-accentCol' />
             <span>
-              {timerImellem()} timer ({startTid} - {slutTid})
+              {timerImellem()} {timerImellem() > 1 ? 'timer' : 'time'} ({startTid} - {slutTid})
             </span>
           </p>
         </div>
       </article>
       <article>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleBooking)}
-            className='w-full'
-          >
+          <form onSubmit={form.handleSubmit(handleBooking)} className='w-full'>
             <FormField
               control={form.control}
               name='navn'
@@ -434,44 +378,26 @@ export const BookingForm: React.FC<BookingProps> = ({
                 <FormItem className='mt-5'>
                   <FormLabel>Navn</FormLabel>
                   <FormControl>
-                    <div
-                      style={{ position: 'relative' }}
-                      className={
-                        form.formState.errors.navn || isBookingValid === false
-                          ? 'shake'
-                          : ''
-                      }
-                    >
+                    <div style={{ position: 'relative' }} className={form.formState.errors.navn || isBookingValid === false ? 'shake' : ''}>
                       <Input
                         placeholder='John Jensen'
                         style={{
-                          borderColor:
-                            form.formState.isSubmitted &&
-                            (form.formState.errors.navn ||
-                              isBookingValid === false)
-                              ? 'red'
-                              : isBookingValid === true
-                              ? 'green'
-                              : 'none',
+                          borderColor: form.formState.isSubmitted && (form.formState.errors.navn || isBookingValid === false) ? 'red' : isBookingValid === true ? 'green' : 'none',
                         }}
                         {...field}
                         id='navn'
                         type='text'
                       />
-                      {form.formState.errors.navn ||
-                      isBookingValid === false ? (
+                      {form.formState.errors.navn || isBookingValid === false ? (
                         <div className='absolute top-2 right-0 pr-3 flex items-center pointer-events-none'>
                           <div>
                             <MdError className={'text-red-500 text-2xl'} />
                           </div>
                         </div>
-                      ) : form.formState.isSubmitted &&
-                        !form.formState.errors.email ? (
+                      ) : form.formState.isSubmitted && !form.formState.errors.email ? (
                         <div className='absolute top-2 right-0 pr-3 flex items-center pointer-events-none'>
                           <div>
-                            <IoIosCheckmarkCircle
-                              className={'text-green-500 text-2xl'}
-                            />
+                            <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
                           </div>
                         </div>
                       ) : (
@@ -495,44 +421,26 @@ export const BookingForm: React.FC<BookingProps> = ({
                 <FormItem className='mt-5'>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <div
-                      style={{ position: 'relative' }}
-                      className={
-                        form.formState.errors.email || isBookingValid === false
-                          ? 'shake'
-                          : ''
-                      }
-                    >
+                    <div style={{ position: 'relative' }} className={form.formState.errors.email || isBookingValid === false ? 'shake' : ''}>
                       <Input
                         placeholder='john@jensen.dk'
                         style={{
-                          borderColor:
-                            form.formState.isSubmitted &&
-                            (form.formState.errors.email ||
-                              isBookingValid === false)
-                              ? 'red'
-                              : isBookingValid === true
-                              ? 'green'
-                              : 'none',
+                          borderColor: form.formState.isSubmitted && (form.formState.errors.email || isBookingValid === false) ? 'red' : isBookingValid === true ? 'green' : 'none',
                         }}
                         {...field}
                         id='email'
                         type='email'
                       />
-                      {form.formState.errors.email ||
-                      isBookingValid === false ? (
+                      {form.formState.errors.email || isBookingValid === false ? (
                         <div className='absolute top-2 right-0 pr-3 flex items-center pointer-events-none'>
                           <div>
                             <MdError className={'text-red-500 text-2xl'} />
                           </div>
                         </div>
-                      ) : form.formState.isSubmitted &&
-                        !form.formState.errors.email ? (
+                      ) : form.formState.isSubmitted && !form.formState.errors.email ? (
                         <div className='absolute top-2 right-0 pr-3 flex items-center pointer-events-none'>
                           <div>
-                            <IoIosCheckmarkCircle
-                              className={'text-green-500 text-2xl'}
-                            />
+                            <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
                           </div>
                         </div>
                       ) : (
@@ -555,15 +463,7 @@ export const BookingForm: React.FC<BookingProps> = ({
                 <FormItem className='mt-5'>
                   <FormLabel>Telefon nummmer</FormLabel>
                   <FormControl>
-                    <div
-                      style={{ position: 'relative' }}
-                      className={
-                        form.formState.errors.telefon ||
-                        isBookingValid === false
-                          ? 'shake'
-                          : ''
-                      }
-                    >
+                    <div style={{ position: 'relative' }} className={form.formState.errors.telefon || isBookingValid === false ? 'shake' : ''}>
                       <InputMask
                         className='flex h-10 w-full rounded bg-contrastCol px-3 py-2 border-b-transparent border-b-2 text-sm file:border-0 transition ease-in duration-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-b-2 focus-visible:border-secondaryCol disabled:cursor-not-allowed disabled:opacity-50'
                         placeholder='12 34 56 78'
@@ -573,27 +473,19 @@ export const BookingForm: React.FC<BookingProps> = ({
                         id='telefon'
                         type='tel'
                         style={{
-                          borderColor: form.formState.errors.telefon
-                            ? 'red'
-                            : form.formState.touchedFields.telefon
-                            ? 'green'
-                            : '',
+                          borderColor: form.formState.errors.telefon ? 'red' : form.formState.touchedFields.telefon ? 'green' : '',
                         }}
                       />
-                      {form.formState.errors.telefon ||
-                      isBookingValid === false ? (
+                      {form.formState.errors.telefon || isBookingValid === false ? (
                         <div className='absolute top-2 right-0 pr-3 flex items-center pointer-events-none'>
                           <div>
                             <MdError className={'text-red-500 text-2xl'} />
                           </div>
                         </div>
-                      ) : form.formState.isSubmitted &&
-                        !form.formState.errors.telefon ? (
+                      ) : form.formState.isSubmitted && !form.formState.errors.telefon ? (
                         <div className='absolute top-2 right-0 pr-3 flex items-center pointer-events-none'>
                           <div>
-                            <IoIosCheckmarkCircle
-                              className={'text-green-500 text-2xl'}
-                            />
+                            <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
                           </div>
                         </div>
                       ) : (
