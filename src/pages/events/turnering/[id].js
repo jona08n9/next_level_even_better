@@ -9,6 +9,7 @@ import { FaCalendar, FaCoins, FaGamepad, FaMoneyBill } from 'react-icons/fa';
 import { BsFillPeopleFill } from 'react-icons/bs';
 import { Link } from '@radix-ui/react-navigation-menu';
 import Countdown from 'react-countdown';
+import { IoGameController } from 'react-icons/io5';
 
 function page() {
   const router = useRouter();
@@ -100,14 +101,13 @@ function page() {
                 <div className='grow'>
                   <div
                     style={{
-                      gridTemplateColumns:
-                        'repeat(auto-fill, minmax(200px, 1fr))',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
                     }}
                     className='grid gap-3'
                   >
                     <div className='p-3 w-full flex flex-col gap-2 bg-contrastCol rounded-sm'>
                       <p className='mt-0 flex gap-1 items-center align-middle font-bold uppercase'>
-                        <FaGamepad className='inline-block' /> Spil
+                        <IoGameController /> Spil
                       </p>
                       <p className='mt-0'>{data.spil}</p>
                     </div>
@@ -116,9 +116,7 @@ function page() {
                         <FaCalendar size='12' />
                         Dato
                       </p>
-                      <p className='mt-0'>
-                        {format(new Date(data.dato), 'dd/MM HH:mm')}
-                      </p>
+                      <p className='mt-0'>{format(new Date(data.dato), 'dd/MM HH:mm')}</p>
                     </div>
                     <div className='p-3 w-full flex flex-col gap-2 bg-contrastCol rounded-sm'>
                       <p className='mt-0 flex gap-1 items-center align-middle font-bold uppercase'>
@@ -135,9 +133,7 @@ function page() {
                     </div>
                   </div>
                   <div>
-                    <p className='text-xl uppercase font-bold'>
-                      {data.subheader}
-                    </p>
+                    <p className='text-xl uppercase font-bold'>{data.subheader}</p>
                     <p>{data.beskrivelse}</p>
                   </div>
                 </div>

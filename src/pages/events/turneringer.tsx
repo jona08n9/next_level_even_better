@@ -35,9 +35,7 @@ export default function Turneringer() {
   return (
     <QueryClientProvider client={queryClient}>
       <Head>
-        <title>
-          Spændende Gaming Turneringer hos Next Level Gaming: Vis Din Færdighed
-        </title>
+        <title>Spændende Gaming Turneringer hos Next Level Gaming: Vis Din Færdighed</title>
         <meta
           name='description'
           content='Deltag i Next Level Gamings episke gaming turneringer. Fra League of Legends til Fortnite, vi har turneringer for alle populære spil. Perfekt for konkurrencedygtige spillere, der vil teste deres færdigheder og vinde præmier. Se vores tidsplan og tilmeld dit hold til vores næste store event.'
@@ -60,8 +58,7 @@ export default function Turneringer() {
             <article className='flex justify-center'>
               <div className='spacer w-full'>
                 <h2>
-                  Find din næste{' '}
-                  <span className='text-accentCol'>turnering</span>
+                  Find din næste <span className='text-accentCol'>turnering</span>
                 </h2>
                 <p className='mb-10'>Se de kommende turneringer nedenfor.</p>
 
@@ -108,11 +105,8 @@ export default function Turneringer() {
                   ]}
                 /> */}
 
-                <TurneringCards />
                 <div className='grid gap-4 lg:grid-cols-3 md:grid-cols-2'>
-                  <TurneringKort />
-                  <TurneringKort />
-                  <TurneringKort />
+                  <TurneringCards />
                 </div>
               </div>
             </article>
