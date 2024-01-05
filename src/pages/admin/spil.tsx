@@ -16,7 +16,9 @@ export const fetchDBGameData = async () => {
 };
 
 export const fetchGameData = async (searchString: string, gameId: number) => {
-  const res = await fetch(`/api/gamelist?search=${searchString}&gameId=${gameId}`);
+  const res = await fetch(
+    `/api/gamelist?search=${searchString}&gameId=${gameId}`
+  );
   const data = await res.json();
   return data;
 };
@@ -44,8 +46,9 @@ export default function Spil() {
               <div className='spacer w-full'>
                 <h1 className='mt-20'>Admin Spil</h1>
                 <p>
-                  Her kan du administrere hvilke spil, som er til rådighed i jeres sortiment. Det er muligt at tilføje, redigere
-                  og fjerne spil.
+                  Her kan du administrere hvilke spil, som er til rådighed i
+                  jeres sortiment. Det er muligt at tilføje, redigere og fjerne
+                  spil.
                 </p>
               </div>
             </div>
