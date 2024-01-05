@@ -29,7 +29,9 @@ export default function Admin() {
   }
 
   async function uploadImage() {
-    // const { data, error } = await supabase.storage.from('sponsorer').upload(file?.name}, avatarFile);
+    const { data, error } = await supabase.storage.from('sponsorer').upload(file as string, fileDetails);
+    console.log(data);
+    console.log(error);
   }
   // COMMENT OUT FROM HERE TO DISABLE LOGIN GUARD
   const router = useRouter();
