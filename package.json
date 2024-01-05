@@ -42,6 +42,7 @@
     "next": "^14.0.3",
     "node": "^21.2.0",
     "react": "^18",
+    "react-countdown": "^2.3.5",
     "react-day-picker": "^8.9.1",
     "react-dom": "^18",
     "react-hook-form": "^7.48.2",
