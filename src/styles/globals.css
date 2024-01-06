@@ -106,6 +106,10 @@ small {
   row-gap: 0.5rem;
 }
 
+.testJonas svg {
+  fill: white;
+}
+
 @media (min-width: 600px) {
   h1 {
     font-size: 61px;
