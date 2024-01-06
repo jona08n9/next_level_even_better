@@ -16,7 +16,7 @@ export const TurneringCards = () => {
     data &&
     data.map(turnering => (
       <Link href={`turnering/${turnering.id}`}>
-        <TurneringKort data={turnering} />
+        <TurneringKort datas={turnering} />
       </Link>
     ))
   );

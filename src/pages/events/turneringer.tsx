@@ -11,10 +11,10 @@ import { TurneringCards } from '../../components/Cards/TurneringCards';
 import { Card } from '@/components/Cards/Card';
 import TurneringKort from '@/components/Cards/TurneringKort';
 
-interface Turnering {
+export interface Turnering {
   id: number;
-  dato: Date;
-  tilmelding: Date;
+  dato: string;
+  tilmelding: string;
   gebyr: number;
   eventNavn: string;
   background_image: string;
@@ -22,6 +22,8 @@ interface Turnering {
   spil: string;
   premie: string;
   beskrivelse: string;
+  tilmelding_open: boolean;
+  subheader: string;
 }
 
 const queryClient = new QueryClient();

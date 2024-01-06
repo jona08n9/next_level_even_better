@@ -13,6 +13,7 @@ export const LayoutAdmin = ({ children }: layoutProps) => {
         pageList={[
           { page: { href: '../admin/spil', pageTitle: 'Administrer Spil' } },
           { page: { href: '../admin/booking', pageTitle: 'Bookinger' } },
+          { page: { href: '../admin/turnering', pageTitle: 'Turneringer' } },
         ]}
       />
       {children}
