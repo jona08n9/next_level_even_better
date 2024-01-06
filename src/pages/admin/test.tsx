@@ -24,10 +24,10 @@ export async function getServerSideProps() {
   const { data: sponsors, error } = await supabase.storage.from('sponsorer').list('', {
     sortBy: { column: 'name', order: 'asc' },
   });
-  if (error) {
-    console.log(error);
+  if (sponsors) {
+    const sponsors1 = sponsors.filter((obj) => obj.name !== '.emptyFolderPlaceholder');
+    return { props: { sponsors1 } };
   }
-  return { props: { sponsors } };
 }
 
 interface Sponsor {
@@ -57,7 +57,7 @@ interface ComboSpons {
   label: string;
 }
 
-export default function test({ sponsors }: { sponsors: fileObject[] }) {
+export default function test({ sponsors1 }: { sponsors1: fileObject[] }) {
   const [file, setFile] = useState<string | null>(null);
   const [fileDetails, setFileDetails] = useState<any>();
   const [sponsorName, setSponsorName] = useState<string>();
@@ -69,20 +69,35 @@ export default function test({ sponsors }: { sponsors: fileObject[] }) {
   const [loader, setLoader] = useState<boolean>(false);
   const [isUploadValid, setIsUploadValid] = useState<boolean>(false);
   const [sponsorForm, setSponsorForm] = useState({ src: '', navn: '' });
+  // COMMENT OUT FROM HERE TO DISABLE LOGIN GUARD
+  const router = useRouter();
 
-  const formSchema = z.object({
-    src: z.string().min(1, { message: 'Vælg et billede til sponsoren' }),
-    navn: z.string().min(1, {
-      message: 'Sponsorens navn skal tastes',
-    }),
-  });
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      src: sponsorForm.src,
-      navn: sponsorForm.navn,
-    },
-  });
+  useEffect(() => {
+    getSession();
+  }, []);
+
+  async function getSession() {
+    const { data, error } = await supabase.auth.getSession();
+    if (data.session === null) {
+      router.push('/login');
+    }
+  }
+
+  // COMMENT OUT TO HERE TO DISABLE LOGIN GUARD
+
+  // const formSchema = z.object({
+  //   src: z.string().min(1, { message: 'Vælg et billede til sponsoren' }),
+  //   navn: z.string().min(1, {
+  //     message: 'Sponsorens navn skal tastes',
+  //   }),
+  // });
+  // const form = useForm<z.infer<typeof formSchema>>({
+  //   resolver: zodResolver(formSchema),
+  //   defaultValues: {
+  //     src: sponsorForm.src,
+  //     navn: sponsorForm.navn,
+  //   },
+  // });
 
   const handleSponsorSubmit = (e: any) => {
     e.preventDefault();
@@ -148,25 +163,10 @@ export default function test({ sponsors }: { sponsors: fileObject[] }) {
     setComboValue('');
   }
 
-  // COMMENT OUT FROM HERE TO DISABLE LOGIN GUARD
-  const router = useRouter();
-
-  useEffect(() => {
-    getSession();
-  }, []);
-
-  async function getSession() {
-    const { data, error } = await supabase.auth.getSession();
-    if (data.session === null) {
-      router.push('/login');
-    }
-  }
-
-  const comboSponsor: ComboSpons[] = sponsors.map((item: fileObject) => ({
+  const comboSponsor: ComboSpons[] = sponsors1.map((item: fileObject) => ({
     value: item.name,
     label: item.name.substring(0, item.name.lastIndexOf('.')).replaceAll(/_/g, ' '),
   }));
-  // COMMENT OUT TO HERE TO DISABLE LOGIN GUARD
 
   return (
     <>
@@ -176,24 +176,26 @@ export default function test({ sponsors }: { sponsors: fileObject[] }) {
             {' '}
             TEST site - For storage upload{' '}
           </h1>
-          <div className='flex flex-row gap-2'>
-            <button className='border border-white p2' onClick={() => console.log(sponsors)}>
-              Sponsors
-            </button>
-            <button className='border border-white p2' onClick={() => console.log(selectSponsor)}>
+          {/* <div className='flex flex-row gap-2'> */}
+          {/*<button className='border border-white p2' onClick={() => console.log(sponsors1)}>
+            Sponsors
+          </button>
+          <button className='border border-white p2' onClick={() => console.log(selectSponsor)}>
               selectValue
             </button>
-            <button className='border border-white p2' onClick={() => console.log(comboSponsor)}>
-              comboSponsor
-            </button>
+
+          <button className='border border-white p2' onClick={() => console.log(comboSponsor)}>
+            comboSponsor
+          </button>{' '}
+       
             <button className='border border-white p2' onClick={() => console.log(comboValue)}>
               comboValue
             </button>
             <button className='border border-white p2' onClick={() => console.log(sponsorList)}>
               sponsorList
             </button>
-          </div>
-          <p>
+          </div>  */}
+          <p className='mb-6'>
             Findes sponsor ikke på listen?{' '}
             <span className='text-accentCol font-semibold cursor-pointer' onClick={() => setOpen2(true)}>
               Tilføj ny sponsor ved at klikke her
@@ -251,18 +253,20 @@ export default function test({ sponsors }: { sponsors: fileObject[] }) {
             )}
           </div>
           <div>
-            <h4>Sponsor liste</h4>
-            {sponsorList.length < 1 ? (
-              <p>Ingen sponsorer tilføjet</p>
+            {sponsorList.length > 0 ? (
+              <>
+                <h4>Sponsor liste</h4>
+                <article className='sponsorCards'>
+                  {sponsorList.map((sponsor) => (
+                    <figure className='bg-white bg-opacity-30 px-3 py-2 flex flex-col justify-center'>
+                      <img src={sponsor.src} alt={`Sponsor image for ${sponsor.name}.`} className='w-full' />
+                      <figcaption className='inline-block font-semibold text-accentCol text-center mt-2 sponsCaption'>{sponsor.name}</figcaption>
+                    </figure>
+                  ))}
+                </article>{' '}
+              </>
             ) : (
-              <article className='sponsorCards'>
-                {sponsorList.map((sponsor) => (
-                  <figure>
-                    <img src={sponsor.src} alt={`Sponsor image for ${sponsor.name}.`} className='w-full' />
-                    <figcaption className='inline-block'>{sponsor.name}</figcaption>
-                  </figure>
-                ))}
-              </article>
+              ''
             )}
           </div>
           <Dialog open={open2} onOpenChange={setOpen2}>
@@ -283,7 +287,7 @@ export default function test({ sponsors }: { sponsors: fileObject[] }) {
                 {file && (
                   <>
                     <Label> Sponsor Billede Preview</Label>
-                    <img src={file} alt='Uploaded file' width='150' height='auto' />
+                    <img src={file} alt='Uploaded file' style={{ width: '150px', height: 'auto' }} />
                   </>
                 )}
                 <DialogFooter>

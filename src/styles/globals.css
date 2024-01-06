@@ -106,6 +106,12 @@ small {
   row-gap: 0.5rem;
 }
 
+.sponsCaption {
+  font-family: 'Rubik', sans-serif;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
 .testJonas svg {
   fill: white;
 }
