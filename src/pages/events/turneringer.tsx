@@ -12,7 +12,7 @@ import { Card } from '@/components/Cards/Card';
 import TurneringKort from '@/components/Cards/TurneringKort';
 
 export interface Turnering {
-  id: number;
+  id: string;
   dato: string;
   tilmelding: string;
   gebyr: number;

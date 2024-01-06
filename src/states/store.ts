@@ -15,5 +15,7 @@ export const deleteEntry = atom<number | null>(null);
 export const openErrorAtom = atom<boolean>(false);
 
 export const editTurneringAtom = atom<Turnering>({} as Turnering);
+export const addTurneringAtom = atom<Turnering>({} as Turnering);
+
 export const showAddTurneringAtom = atom<boolean>(false);
 export const showEditTurneringAtom = atom<boolean>(false);
