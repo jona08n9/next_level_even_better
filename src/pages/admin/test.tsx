@@ -139,7 +139,7 @@ export default function test({ sponsors }: { sponsors: fileObject[] }) {
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <Button variant='ghost' role='combobox' aria-expanded={open} className='w-[200px] justify-between border-b-2 border-white'>
-                  {comboValue ? comboSponsor.find((sponsor: any) => sponsor.value === comboValue)?.label : 'Find sponsor...'}
+                  {comboValue ? comboSponsor.find((sponsor: any) => sponsor.value === comboValue)?.label : 'Vælg sponsor...'}
                   <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
                 </Button>
               </PopoverTrigger>
