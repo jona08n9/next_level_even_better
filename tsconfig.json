@@ -21,7 +21,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "src/pages/events/turnering/[id].js"
+    "src/pages/events/turnering/[id].jsx"
   ],
   "exclude": ["node_modules"]
 }

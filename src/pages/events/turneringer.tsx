@@ -18,6 +18,7 @@ export interface Turnering {
   gebyr: number;
   eventNavn: string;
   background_image: string;
+
   format: string;
   spil: string;
   premie: string;
