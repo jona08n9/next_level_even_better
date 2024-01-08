@@ -1,15 +1,6 @@
 import { useEffect, useState } from 'react';
-import {
-  Command,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Command, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { fetchGameData, fetchDBGameData } from '../../pages/admin/spil';
@@ -26,8 +17,8 @@ import { EditGameSheet } from '../../components/EditGameSheet/EditGameSheet';
 import { supabase } from '../../../utils/supabaseClient';
 import { useAtom } from 'jotai';
 import { useQueries } from '@tanstack/react-query';
-import { Result } from '@/Types/gamelist';
-import { GameCardRoot } from '@/Types/gamecard';
+import { Game, Result } from '@/Types/gamelist';
+
 import { FilterField } from '@/components/FilterField/FilterField';
 import { AscendingDescending } from '@/components/AscendingDescending/AscendingDescending';
 
@@ -43,14 +34,12 @@ export const SpilListe = () => {
   const [genreValue, setGenreValue] = useState('');
   const [platformValue, setPlatformValue] = useState('');
   const [searchValue, setSearcheValue] = useState('');
-  const [filteredGames, setFilteredGames] = useState<GameCardRoot[] | null>(
-    null
-  );
+  const [filteredGames, setFilteredGames] = useState<Game[] | null>(null);
 
   /* Subscribe til supabase ændringer */
   supabase
     .channel('room1')
-    .on('postgres_changes', { event: '*', schema: '*' }, (payload) => {
+    .on('postgres_changes', { event: '*', schema: '*' }, payload => {
       //console.log('Change received!', payload);
     })
     .subscribe();
@@ -113,40 +102,30 @@ export const SpilListe = () => {
     setAcsedning(!acsending);
   };
 
-  const filterGames = (
-    genreValue: string,
-    searchValue: string,
-    platformValue: string
-  ) => {
+  const filterGames = (genreValue: string, searchValue: string, platformValue: string) => {
     if (dbGameData) {
-      const filteredGameList = dbGameData.filter((game) => {
+      const filteredGameList = dbGameData.filter(game => {
         const hasPlatform =
           platformValue && platformValue !== 'Alle'
-            ? game.platforms.some((platform) => platform.name === platformValue)
+            ? game.platforms.some(platform => platform.name === platformValue)
             : true;
         const hasGenre =
           genreValue && genreValue !== 'Alle'
-            ? game.tags.some((tag) => tag.name === genreValue)
+            ? game.tags.some(tag => tag.name === genreValue)
             : true;
         const matchesSearch = searchValue
           ? game.title.toLowerCase().includes(searchValue.toLowerCase()) ||
             game.id.toString().includes(searchValue.toLowerCase()) ||
             game.platforms.some(
-              (platform) =>
-                platform.name.toString().toLowerCase() ===
-                searchValue.toLowerCase()
+              platform => platform.name.toString().toLowerCase() === searchValue.toLowerCase()
             ) ||
-            game.tags.some(
-              (tag) => tag.name.toLowerCase() === searchValue.toLowerCase()
-            )
+            game.tags.some(tag => tag.name.toLowerCase() === searchValue.toLowerCase())
           : true;
 
         return hasGenre && matchesSearch && hasPlatform;
       });
       const sortedGames = filteredGameList?.sort((a, b) => {
-        return acsending
-          ? a.title.localeCompare(b.title)
-          : b.title.localeCompare(a.title);
+        return acsending ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
       });
 
       setFilteredGames(sortedGames);
@@ -203,13 +182,13 @@ export const SpilListe = () => {
           <FilterField
             filterType='dropDown'
             dropDownHeader='Genre'
-            dropDownItems={gameTags.map((tag) => tag.name)}
+            dropDownItems={gameTags.map(tag => tag.name)}
             onChange={handleSelectChange}
           />
           <FilterField
             filterType='dropDown'
             dropDownHeader='Platform'
-            dropDownItems={consoles.map((tag) => tag.name)}
+            dropDownItems={consoles.map(tag => tag.name)}
             onChange={handleSelectChange}
           />
         </div>
@@ -221,7 +200,7 @@ export const SpilListe = () => {
             <CommandInput
               placeholder='Søg på et spil...'
               className='h-9'
-              onValueChange={(e) => setSearchString(e)}
+              onValueChange={e => setSearchString(e)}
             />
 
             {gameData?.results && gameId == 0 && searchString.length > 3 && (
@@ -250,12 +229,12 @@ export const SpilListe = () => {
         {dbGameData &&
           !dbGameDataIsLoading &&
           filteredGames &&
-          filteredGames.map((game) => (
+          filteredGames.map(game => (
             <GameCard
               Name={game.title}
               Image_={`${game.background_image}`}
-              Console={game.platforms.map((platform) => platform.name)}
-              Tags={game.tags.map((tag) => tag.name)}
+              Console={game.platforms.map(platform => platform.name)}
+              Tags={game.tags.map(tag => tag.name)}
               Description={game.description}
               IsAdmin
               onClick={() => {
