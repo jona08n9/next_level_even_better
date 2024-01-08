@@ -28,11 +28,16 @@ interface ContactFormProps {
   // Add any additional props if needed
   selectedValue: string;
   onSelectChange: (value: string) => void;
-  selectedDate?: string;
-  onDateChange: (value: string) => void;
+  selectedDate?: Date;
+  onDateChange: (value: Date) => void;
 }
 
-export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selectedDate, onDateChange, onSelectChange }) => {
+export const ContactForm: React.FC<ContactFormProps> = ({
+  selectedValue,
+  selectedDate,
+  onDateChange,
+  onSelectChange,
+}) => {
   const formSchema = z.object({
     subject: z.string().min(1, {
       message: 'Vælg venligst et emne',
@@ -47,23 +52,19 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
       amountOfAdults: z.string().min(1, {
         message: 'Du skal vælge et antal voksne',
       }),
-      inputDatePick: z.string().min(1, {
-        message: 'Vælg venligst en dato',
-      }),
+      inputDatePick: z.date(),
     }),
 
     ...(selectedValue === 'firma-event' && {
       amountOfParticipants: z.string().min(1, {
         message: 'Du skal vælge et antal voksne',
       }),
-      inputDatePick: z.string().min(1, {
-        message: 'Vælg venligst en dato',
-      }),
+      inputDatePick: z.date(),
     }),
 
     ...(selectedValue === 'nlp' && {
       amountOfParticipants: z.string().refine(
-        (value) => {
+        value => {
           const parsedValue = parseInt(value, 10);
           return !isNaN(parsedValue) && parsedValue >= 6 && parsedValue <= 10;
         },
@@ -71,9 +72,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
           message: 'Antallet af deltagende skal være mellem 6 og 10',
         }
       ),
-      inputDatePick: z.string().min(1, {
-        message: 'Vælg venligst en dato',
-      }),
+      inputDatePick: z.date(),
     }),
 
     // Turnering and Andet
@@ -83,7 +82,10 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
 
     email: z.string().email('Indtast en gyldig email'),
     phoneNum: z
-      .union([z.string().length(0, { message: 'Indtast venligst et gyldigt telefonnummer' }), z.string().min(11)])
+      .union([
+        z.string().length(0, { message: 'Indtast venligst et gyldigt telefonnummer' }),
+        z.string().min(11),
+      ])
       .optional(),
 
     textFieldMessage: z.string().min(1, {
@@ -115,7 +117,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
     form.setValue('subject', value);
   };
 
-  const handleDateChange = (value: string) => {
+  const handleDateChange = (value: Date) => {
     onDateChange(value);
     // @ts-ignore
     form.setValue('inputDatePick', value);
@@ -177,9 +179,9 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                   <FormLabel>Hvad vil du gerne kontakt os omkring?</FormLabel>
                   <FormControl>
                     <div
-                      className={`mt-8 w-[11.25rem] ${selectedValue === '' ? 'bdr-ripple-ani-btn pink' : ''} ${
-                        !form.formState.errors ? 'shake' : ''
-                      }`}
+                      className={`mt-8 w-[11.25rem] ${
+                        selectedValue === '' ? 'bdr-ripple-ani-btn pink' : ''
+                      } ${!form.formState.errors ? 'shake' : ''}`}
                     >
                       <SelectField
                         onSelectChange={handleSelectChange}
@@ -236,7 +238,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                             className={form.formState.errors.inputDatePick ? 'shake' : ''}
                           >
                             <InputDatePicker
-                              onDateChange={(value) => {
+                              onDateChange={value => {
                                 handleDateChange(value);
                                 field.onChange(value); // Ensure the field's onChange is called
                               }}
@@ -248,7 +250,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                                   <MdError className={'text-red-500 text-2xl'} />
                                 </div>
                               </div>
-                            ) : form.formState.isSubmitted && !form.formState.errors.inputDatePick ? (
+                            ) : form.formState.isSubmitted &&
+                              !form.formState.errors.inputDatePick ? (
                               <div className='absolute top-2 left-52 pr-3 flex items-center pointer-events-none'>
                                 <div>
                                   <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
@@ -300,7 +303,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                                   <MdError className={'text-red-500 text-2xl'} />
                                 </div>
                               </div>
-                            ) : form.formState.isSubmitted && !form.formState.errors.amountOfKids ? (
+                            ) : form.formState.isSubmitted &&
+                              !form.formState.errors.amountOfKids ? (
                               <div className='absolute top-1.5 right-0 pr-3 flex items-center pointer-events-none'>
                                 <div>
                                   <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
@@ -361,7 +365,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                                   <MdError className={'text-red-500 text-2xl'} />
                                 </div>
                               </div>
-                            ) : form.formState.isSubmitted && !form.formState.errors.amountOfAdults ? (
+                            ) : form.formState.isSubmitted &&
+                              !form.formState.errors.amountOfAdults ? (
                               <div className='absolute top-1.5 right-0 pr-3 flex items-center pointer-events-none'>
                                 <div>
                                   <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
@@ -406,7 +411,11 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                           >
                             <Input
                               style={{
-                                borderColor: form.formState.isSubmitted ? (form.formState.errors.navn ? 'red' : 'green') : 'none',
+                                borderColor: form.formState.isSubmitted
+                                  ? form.formState.errors.navn
+                                    ? 'red'
+                                    : 'green'
+                                  : 'none',
                               }}
                               placeholder='John Jensen'
                               {...field}
@@ -611,7 +620,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                                   <MdError className={'text-red-500 text-2xl'} />
                                 </div>
                               </div>
-                            ) : form.formState.isSubmitted && !form.formState.errors.textFieldMessage ? (
+                            ) : form.formState.isSubmitted &&
+                              !form.formState.errors.textFieldMessage ? (
                               <div className='absolute top-1.5 right-0 pr-3 flex items-center pointer-events-none'>
                                 <div>
                                   <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
@@ -706,7 +716,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                             className={form.formState.errors.inputDatePick ? 'shake' : ''}
                           >
                             <InputDatePicker
-                              onDateChange={(value) => {
+                              onDateChange={value => {
                                 handleDateChange(value);
                                 field.onChange(value); // Ensure the field's onChange is called
                               }}
@@ -718,7 +728,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                                   <MdError className={'text-red-500 text-2xl'} />
                                 </div>
                               </div>
-                            ) : form.formState.isSubmitted && !form.formState.errors.inputDatePick ? (
+                            ) : form.formState.isSubmitted &&
+                              !form.formState.errors.inputDatePick ? (
                               <div className='absolute top-2 left-52 pr-3 flex items-center pointer-events-none'>
                                 <div>
                                   <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
@@ -768,7 +779,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                                   <MdError className={'text-red-500 text-2xl'} />
                                 </div>
                               </div>
-                            ) : form.formState.isSubmitted && !form.formState.errors.amountOfParticipants ? (
+                            ) : form.formState.isSubmitted &&
+                              !form.formState.errors.amountOfParticipants ? (
                               <div className='absolute top-1.5 right-0 pr-3 flex items-center pointer-events-none'>
                                 <div>
                                   <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
@@ -813,7 +825,11 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                           >
                             <Input
                               style={{
-                                borderColor: form.formState.isSubmitted ? (form.formState.errors.navn ? 'red' : 'green') : 'none',
+                                borderColor: form.formState.isSubmitted
+                                  ? form.formState.errors.navn
+                                    ? 'red'
+                                    : 'green'
+                                  : 'none',
                               }}
                               placeholder='John Jensen'
                               {...field}
@@ -1018,7 +1034,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                                   <MdError className={'text-red-500 text-2xl'} />
                                 </div>
                               </div>
-                            ) : form.formState.isSubmitted && !form.formState.errors.textFieldMessage ? (
+                            ) : form.formState.isSubmitted &&
+                              !form.formState.errors.textFieldMessage ? (
                               <div className='absolute top-1.5 right-0 pr-3 flex items-center pointer-events-none'>
                                 <div>
                                   <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
@@ -1114,7 +1131,11 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                           >
                             <Input
                               style={{
-                                borderColor: form.formState.isSubmitted ? (form.formState.errors.navn ? 'red' : 'green') : 'none',
+                                borderColor: form.formState.isSubmitted
+                                  ? form.formState.errors.navn
+                                    ? 'red'
+                                    : 'green'
+                                  : 'none',
                               }}
                               placeholder='John Jensen'
                               {...field}
@@ -1319,7 +1340,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                                   <MdError className={'text-red-500 text-2xl'} />
                                 </div>
                               </div>
-                            ) : form.formState.isSubmitted && !form.formState.errors.textFieldMessage ? (
+                            ) : form.formState.isSubmitted &&
+                              !form.formState.errors.textFieldMessage ? (
                               <div className='absolute top-1.5 right-0 pr-3 flex items-center pointer-events-none'>
                                 <div>
                                   <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
@@ -1415,7 +1437,11 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                           >
                             <Input
                               style={{
-                                borderColor: form.formState.isSubmitted ? (form.formState.errors.navn ? 'red' : 'green') : 'none',
+                                borderColor: form.formState.isSubmitted
+                                  ? form.formState.errors.navn
+                                    ? 'red'
+                                    : 'green'
+                                  : 'none',
                               }}
                               placeholder='John Jensen'
                               {...field}
@@ -1620,7 +1646,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                                   <MdError className={'text-red-500 text-2xl'} />
                                 </div>
                               </div>
-                            ) : form.formState.isSubmitted && !form.formState.errors.textFieldMessage ? (
+                            ) : form.formState.isSubmitted &&
+                              !form.formState.errors.textFieldMessage ? (
                               <div className='absolute top-1.5 right-0 pr-3 flex items-center pointer-events-none'>
                                 <div>
                                   <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
@@ -1703,7 +1730,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                           className={form.formState.errors.inputDatePick ? 'shake' : ''}
                         >
                           <InputDatePicker
-                            onDateChange={(value) => {
+                            onDateChange={value => {
                               handleDateChange(value);
                               field.onChange(value); // Ensure the field's onChange is called
                             }}
@@ -1765,7 +1792,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                                 <MdError className={'text-red-500 text-2xl'} />
                               </div>
                             </div>
-                          ) : form.formState.isSubmitted && !form.formState.errors.amountOfParticipants ? (
+                          ) : form.formState.isSubmitted &&
+                            !form.formState.errors.amountOfParticipants ? (
                             <div className='absolute top-1.5 right-0 pr-3 flex items-center pointer-events-none'>
                               <div>
                                 <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
@@ -1808,7 +1836,11 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                           >
                             <Input
                               style={{
-                                borderColor: form.formState.isSubmitted ? (form.formState.errors.navn ? 'red' : 'green') : 'none',
+                                borderColor: form.formState.isSubmitted
+                                  ? form.formState.errors.navn
+                                    ? 'red'
+                                    : 'green'
+                                  : 'none',
                               }}
                               placeholder='John Jensen'
                               {...field}
@@ -2013,7 +2045,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ selectedValue, selecte
                                   <MdError className={'text-red-500 text-2xl'} />
                                 </div>
                               </div>
-                            ) : form.formState.isSubmitted && !form.formState.errors.textFieldMessage ? (
+                            ) : form.formState.isSubmitted &&
+                              !form.formState.errors.textFieldMessage ? (
                               <div className='absolute top-1.5 right-0 pr-3 flex items-center pointer-events-none'>
                                 <div>
                                   <IoIosCheckmarkCircle className={'text-green-500 text-2xl'} />
