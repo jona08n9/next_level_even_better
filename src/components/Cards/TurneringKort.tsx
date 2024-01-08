@@ -1,19 +1,44 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { IoGameController } from 'react-icons/io5';
 import { FaCalendarAlt } from 'react-icons/fa';
 import { FaTrophy } from 'react-icons/fa6';
 import { format } from 'date-fns';
 import Countdown from 'react-countdown';
+import { Turnering } from '@/pages/events/turneringer';
+import { supabase } from '../../../utils/supabaseClient';
 
-function TurneringKort(data) {
-  const turnering = data.data;
+function TurneringKort({ datas }: { datas: Turnering }) {
+  const turnering = datas;
 
   const timestamp = turnering && turnering.tilmelding;
 
   const dateObject = new Date(timestamp);
 
   const countdownDate = Date.now() + Date.parse(timestamp);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('turneringer')
+          .update({ tilmelding_open: 'false' })
+          .eq('id', `${datas.id}`)
+          .select();
+
+        // Handle data or error here if needed
+      } catch (error) {
+        console.log(error);
+      } finally {
+        // Code to run regardless of success or failure
+      }
+    };
+
+    if (Date.now() > Date.parse(timestamp)) {
+      fetchData();
+      console.log('useEffect', Date.now, Date.parse);
+    }
+  }, [timestamp, datas.id]);
 
   return (
     <>
@@ -31,9 +56,15 @@ function TurneringKort(data) {
             />
             <div className='aspect-video absolute flex flex-col w-full h-auto justify-between rounded p-2 bg-gradient-to-t from-primaryCol to-transparent z-10'>
               <div className='flex gap-2 justify-end'>
-                <div className='bg-[#08ef8e] w-fit h-min px-2 rounded-full flex self-center uppercase'>
+                <div
+                  className={`${
+                    turnering.tilmelding_open ? 'bg-[#08ef8e]' : 'bg-accentCol'
+                  } w-fit h-min px-2 rounded-full flex self-center uppercase`}
+                >
                   <small className='mt-0 text-primaryCol font-bold'>
-                    {turnering.tilmelding_open ? 'Åben for tilmelding' : 'Lukket for tilmelding'}
+                    {turnering.tilmelding_open
+                      ? 'Åben for tilmelding'
+                      : 'Tilmelding lukket'}
                   </small>
                 </div>
               </div>

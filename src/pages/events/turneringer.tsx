@@ -11,17 +11,19 @@ import { TurneringCards } from '../../components/Cards/TurneringCards';
 import { Card } from '@/components/Cards/Card';
 import TurneringKort from '@/components/Cards/TurneringKort';
 
-interface Turnering {
+export interface Turnering {
   id: number;
-  dato: Date;
-  tilmelding: Date;
+  dato: string;
+  tilmelding: string;
   gebyr: number;
   eventNavn: string;
   background_image: string;
+  subheader: string;
   format: string;
   spil: string;
   premie: string;
   beskrivelse: string;
+  tilmelding_open: boolean;
 }
 
 const queryClient = new QueryClient();
@@ -35,7 +37,9 @@ export default function Turneringer() {
   return (
     <QueryClientProvider client={queryClient}>
       <Head>
-        <title>Spændende Gaming Turneringer hos Next Level Gaming: Vis Din Færdighed</title>
+        <title>
+          Spændende Gaming Turneringer hos Next Level Gaming: Vis Din Færdighed
+        </title>
         <meta
           name='description'
           content='Deltag i Next Level Gamings episke gaming turneringer. Fra League of Legends til Fortnite, vi har turneringer for alle populære spil. Perfekt for konkurrencedygtige spillere, der vil teste deres færdigheder og vinde præmier. Se vores tidsplan og tilmeld dit hold til vores næste store event.'
@@ -58,7 +62,8 @@ export default function Turneringer() {
             <article className='flex justify-center'>
               <div className='spacer w-full'>
                 <h2>
-                  Find din næste <span className='text-accentCol'>turnering</span>
+                  Find din næste{' '}
+                  <span className='text-accentCol'>turnering</span>
                 </h2>
                 <p className='mb-10'>Se de kommende turneringer nedenfor.</p>
 

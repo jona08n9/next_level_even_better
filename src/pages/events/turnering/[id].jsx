@@ -10,10 +10,18 @@ import { BsFillPeopleFill } from 'react-icons/bs';
 import { Link } from '@radix-ui/react-navigation-menu';
 import Countdown from 'react-countdown';
 import { IoGameController } from 'react-icons/io5';
+import { Button } from '../../../components/Button/Button';
 
 function page() {
   const router = useRouter();
   const [data, setData] = useState(null);
+  const [tilmeldingOpen, setTilmeldingOpen] = useState(true);
+
+  const timestamp = data && data.tilmelding;
+
+  const dateObject = new Date(timestamp);
+
+  const countdownDate = Date.now() + Date.parse(timestamp);
 
   useEffect(() => {
     async function fetchData() {
@@ -35,17 +43,37 @@ function page() {
     fetchData();
   }, [router.query.id]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('turneringer')
+          .update({ tilmelding_open: 'false' })
+          .eq('id', `${data.id}`)
+          .select();
+
+        // Handle data or error here if needed
+      } catch (error) {
+        console.log(error);
+      } finally {
+        // Code to run regardless of success or failure
+      }
+    };
+
+    if (Date.now() > Date.parse(timestamp)) {
+      fetchData();
+      setTilmeldingOpen(false);
+      console.log('closed');
+    }
+  }, [timestamp]);
+
+  console.log('tilmelding open?', tilmeldingOpen);
+
   console.log(data);
 
   console.log(router.query);
 
   const isFrontPage = false;
-
-  const timestamp = data && data.tilmelding;
-
-  const dateObject = new Date(timestamp);
-
-  const countdownDate = Date.now() + Date.parse(timestamp);
 
   const renderer = ({ hours, minutes, seconds, days, completed }) => {
     return (
@@ -56,6 +84,7 @@ function page() {
   };
 
   console.log('checker', Date.now());
+  console.log('checker 2', Date.now() < Date.parse(timestamp));
   console.log('checker 2', Date.parse(timestamp));
 
   console.log(format(dateObject, 'dd/MM HH:mm'));
@@ -76,8 +105,20 @@ function page() {
                 <h2>{data.spil}</h2>
                 <div className='flex justify-between items-center'>
                   <div className='flex gap-4 align-middle'>
-                    <div className='bg-accentCol w-fit px-2 self-center rounded-full flex'>
-                      <p className='text-primaryCol mt-0 font-medium'>OPEN</p>
+                    <div
+                      className={`${
+                        tilmeldingOpen ? 'bg-[#08ef8e]' : 'bg-accentCol'
+                      } w-fit px-2 self-center rounded-full flex`}
+                    >
+                      {tilmeldingOpen ? (
+                        <p className='text-primaryCol mt-0 font-medium uppercase'>
+                          Tilmelding er åben
+                        </p>
+                      ) : (
+                        <p className='text-primaryCol mt-0 font-medium uppercase'>
+                          Tilmelding er lukket
+                        </p>
+                      )}
                     </div>
                     <h4 className='mt-0'>
                       Tilmeldingsfrist D. {format(dateObject, 'dd/MM HH:mm')}
@@ -87,11 +128,18 @@ function page() {
                     <p className='text-center text-2xl'>
                       <Countdown date={Date.parse(timestamp)} />
                     </p>
-                    <a href='/om-os/kontakt?turnering'>
-                      <div className='w-fit px-8 py-2 font-bold uppercase rounded-sm h-min bg-accentCol'>
-                        Tilmeld
-                      </div>
-                    </a>
+                    <Button
+                      className={`${
+                        !tilmeldingOpen
+                          ? 'bg-contrastCol border-contrastCol opacity-70 border cursor-not-allowed'
+                          : ''
+                      } mt-0 text-2xl font-bold px-8 py-6`}
+                      link={`${
+                        !tilmeldingOpen ? '' : '/om-os/kontakt?turnering'
+                      }`}
+                    >
+                      Tilmeld
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -101,7 +149,8 @@ function page() {
                 <div className='grow'>
                   <div
                     style={{
-                      gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                      gridTemplateColumns:
+                        'repeat(auto-fill, minmax(200px, 1fr))',
                     }}
                     className='grid gap-3'
                   >
@@ -116,7 +165,9 @@ function page() {
                         <FaCalendar size='12' />
                         Dato
                       </p>
-                      <p className='mt-0'>{format(new Date(data.dato), 'dd/MM HH:mm')}</p>
+                      <p className='mt-0'>
+                        {format(new Date(data.dato), 'dd/MM HH:mm')}
+                      </p>
                     </div>
                     <div className='p-3 w-full flex flex-col gap-2 bg-contrastCol rounded-sm'>
                       <p className='mt-0 flex gap-1 items-center align-middle font-bold uppercase'>
@@ -133,7 +184,9 @@ function page() {
                     </div>
                   </div>
                   <div>
-                    <p className='text-xl uppercase font-bold'>{data.subheader}</p>
+                    <p className='text-xl uppercase font-bold'>
+                      {data.subheader}
+                    </p>
                     <p>{data.beskrivelse}</p>
                   </div>
                 </div>
