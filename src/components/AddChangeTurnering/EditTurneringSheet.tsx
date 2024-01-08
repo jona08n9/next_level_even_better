@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
 import { editTurneringAtom, showEditTurneringAtom } from '@/states/store';
-import { Turnering } from '../events/turneringer';
+import { Turnering } from '../../pages/events/turneringer';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   Sheet,
@@ -52,7 +52,6 @@ export const EditTurneringSheet = (turnering: Turnering) => {
   });
 
   useEffect(() => {
-    setValue('id', editTurnering?.id || 0);
     setValue('dato', editTurnering?.dato);
     setValue('background_image', editTurnering?.background_image || '');
     setValue('tilmelding', editTurnering?.tilmelding);
