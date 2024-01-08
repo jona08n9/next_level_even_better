@@ -14,7 +14,7 @@ import { fetchDBTurneringData } from './turnering';
 import { AddTurneringSheet } from '../../components/AddChangeTurnering/AddTurneringSheet';
 import { fetchSponsors, fileObject } from './test';
 
-export const TurneringsListe = () => {
+const TurneringsListe = () => {
   const [editTurnering, setEditTurnering] = useAtom(editTurneringAtom);
   const [addTurnering, setAddTurnering] = useAtom(addTurneringAtom);
   const [showAddTurnering, setShowAddTurnering] = useAtom(showAddTurneringAtom);
