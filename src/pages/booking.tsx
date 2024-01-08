@@ -9,16 +9,45 @@ import { DatePicker } from '@/components/Calender/DatePicker';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { BookingTypes } from '@/enum/BookingTimes';
 import { Matcher } from 'react-day-picker';
-import { BookingTimeSlot, PCObjects, TimeSlot, TimeSlotOptions, UserBooking } from '@/Types/calendar';
+import {
+  BookingTimeSlot,
+  PCObjects,
+  TimeSlot,
+  TimeSlotOptions,
+  UserBooking,
+} from '@/Types/calendar';
 import { supabase } from '../../utils/supabaseClient';
 import { Bookings } from '@/Types/Bookings';
-import { formattedDate, futureDays, pastDays } from '@/calendarFunctions/calendarFunctions';
+import {
+  formattedDate,
+  futureDays,
+  pastDays,
+} from '@/calendarFunctions/calendarFunctions';
 import timeSlots from '@/Types/TimesArray';
 import { AvailibleTimeSlot } from '@/components/AvailibleTimeSlot/AvailibleTimeSlot';
 import { BookedTimeSlot } from '@/components/BookedTimeSlot/BookedTimeSlot';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { AnimatePresence, motion } from 'framer-motion';
-import { FormControl, FormItem, FormLabel, FormDescription, FormMessage, FormField, Form, useFormField } from '../components/ui/form';
+import {
+  FormControl,
+  FormItem,
+  FormLabel,
+  FormDescription,
+  FormMessage,
+  FormField,
+  Form,
+  useFormField,
+} from '../components/ui/form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import BookingForm from '@/modules/BookingForm/BookingForm';
@@ -52,7 +81,8 @@ export default function Booking({ john }: { john: Bookings[] }) {
     index: undefined,
   });
   const [bookTimes, setBookTimes] = useState<string[]>([]);
-  const [bookingDateTimes, setBookingDateTimes] = useState<BookingTimeSlot[]>(timeSlots);
+  const [bookingDateTimes, setBookingDateTimes] =
+    useState<BookingTimeSlot[]>(timeSlots);
   const amountRef = useRef<HTMLDivElement | null>(null);
   const dateRef = useRef<HTMLDivElement | null>(null);
   const timeRef = useRef<HTMLDivElement | null>(null);
@@ -76,14 +106,31 @@ export default function Booking({ john }: { john: Bookings[] }) {
   }, [router.events]);
 
   useEffect(() => {
-    if (bookingRef.current && userChoices?.startTime?.index !== undefined && userChoices?.amount && userChoices.date) {
+    if (
+      bookingRef.current &&
+      userChoices?.startTime?.index !== undefined &&
+      userChoices?.amount &&
+      userChoices.date
+    ) {
       setTimeout(() => {
         //@ts-ignore
         bookingRef.current.scrollIntoView({ behavior: 'smooth' });
       }, 425);
-    } else if (timeRef.current && userChoices?.amount && userChoices.date && userChoices?.startTime?.index === undefined && userChoices?.endTime?.index === undefined && timeChosen.index === undefined) {
+    } else if (
+      timeRef.current &&
+      userChoices?.amount &&
+      userChoices.date &&
+      userChoices?.startTime?.index === undefined &&
+      userChoices?.endTime?.index === undefined &&
+      timeChosen.index === undefined
+    ) {
       timeRef.current.scrollIntoView({ behavior: 'smooth' });
-    } else if (dateRef.current && userChoices?.amount && userChoices?.startTime?.index === undefined && timeChosen.index === undefined) {
+    } else if (
+      dateRef.current &&
+      userChoices?.amount &&
+      userChoices?.startTime?.index === undefined &&
+      timeChosen.index === undefined
+    ) {
       dateRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [userChoices]);
@@ -93,7 +140,10 @@ export default function Booking({ john }: { john: Bookings[] }) {
     //console.log(e.target.value);
     let amountChosen = e.target.value;
     if (e.target.value.length >= 1) {
-      amountChosen = e.target.value.substring(e.target.value.length - 1, e.target.value.length);
+      amountChosen = e.target.value.substring(
+        e.target.value.length - 1,
+        e.target.value.length
+      );
       //console.log('HER1');
     }
 
@@ -191,7 +241,9 @@ export default function Booking({ john }: { john: Bookings[] }) {
       for (const entry of PCS[pc]) {
         console.log(entry);
         // Find the corresponding entry in the resultArray or create a new one
-        const resultEntry: BookingTimeSlot | undefined = availibleTimes.find((item) => item.time === entry.time);
+        const resultEntry: BookingTimeSlot | undefined = availibleTimes.find(
+          (item) => item.time === entry.time
+        );
 
         if (resultEntry) {
           // If the entry exists, update the count based on the booked status
@@ -305,7 +357,11 @@ export default function Booking({ john }: { john: Bookings[] }) {
     console.log('userChoices', userChoices);
   }
 
-  function editBookedTimes(tid: string, index: number, statement: string | undefined) {
+  function editBookedTimes(
+    tid: string,
+    index: number,
+    statement: string | undefined
+  ) {
     let isolatedArray: BookingTimeSlot[];
     let bookInstance: boolean;
     let newBookTimes: string[] = [];
@@ -406,9 +462,15 @@ export default function Booking({ john }: { john: Bookings[] }) {
         break;
       case BookingTypes.UpdateStart:
         //Index er tættest på start, så det er denne der skal opdateres - hvis ikke der er bookinger i vejen!
-        if (userChoices?.startTime?.index !== undefined && index > userChoices?.startTime?.index) {
+        if (
+          userChoices?.startTime?.index !== undefined &&
+          index > userChoices?.startTime?.index
+        ) {
           //@ts-ignore
-          isolatedArray = bookingDateTimes.slice(userChoices.startTime.index, index + 1);
+          isolatedArray = bookingDateTimes.slice(
+            userChoices.startTime.index,
+            index + 1
+          );
           bookInstance = isolatedArray.some((el) => el.booked === true);
 
           //console.log('isolatedArray, UpdateStart1', isolatedArray);
@@ -430,9 +492,15 @@ export default function Booking({ john }: { john: Bookings[] }) {
               startTime: { time: tid, index: index },
             }));
           }
-        } else if (userChoices?.startTime?.index !== undefined && index < userChoices?.startTime.index) {
+        } else if (
+          userChoices?.startTime?.index !== undefined &&
+          index < userChoices?.startTime.index
+        ) {
           //@ts-ignore
-          isolatedArray = bookingDateTimes.slice(index, userChoices.startTime.index + 1);
+          isolatedArray = bookingDateTimes.slice(
+            index,
+            userChoices.startTime.index + 1
+          );
           bookInstance = isolatedArray.some((el) => el.booked === true);
 
           //console.log('isolatedArray, UpdateStart2', isolatedArray);
@@ -459,9 +527,15 @@ export default function Booking({ john }: { john: Bookings[] }) {
         }
         break;
       case BookingTypes.UpdateEnd:
-        if (userChoices?.endTime?.index !== undefined && index > userChoices?.endTime?.index) {
+        if (
+          userChoices?.endTime?.index !== undefined &&
+          index > userChoices?.endTime?.index
+        ) {
           //@ts-ignore
-          isolatedArray = bookingDateTimes.slice(userChoices.endTime.index, index + 1);
+          isolatedArray = bookingDateTimes.slice(
+            userChoices.endTime.index,
+            index + 1
+          );
           bookInstance = isolatedArray.some((el) => el.booked === true);
 
           //console.log('isolatedArray, UpdateEnd1', isolatedArray);
@@ -470,7 +544,10 @@ export default function Booking({ john }: { john: Bookings[] }) {
             errorMessagePopUp(userChoices.endTime.time, tid, isolatedArray);
             setOpenDialogAlert(true);
           } else {
-            let newBookArray: BookingTimeSlot[] = bookingDateTimes.slice(userChoices?.startTime?.index, index + 1);
+            let newBookArray: BookingTimeSlot[] = bookingDateTimes.slice(
+              userChoices?.startTime?.index,
+              index + 1
+            );
             for (let i = 0; i < newBookArray.length; i++) {
               newBookTimes.push(newBookArray[i].time);
             }
@@ -480,9 +557,15 @@ export default function Booking({ john }: { john: Bookings[] }) {
               endTime: { time: tid, index: index },
             }));
           }
-        } else if (userChoices?.endTime?.index !== undefined && index < userChoices?.endTime.index) {
+        } else if (
+          userChoices?.endTime?.index !== undefined &&
+          index < userChoices?.endTime.index
+        ) {
           //@ts-ignore
-          isolatedArray = bookingDateTimes.slice(index, userChoices.endTime.index + 1);
+          isolatedArray = bookingDateTimes.slice(
+            index,
+            userChoices.endTime.index + 1
+          );
           bookInstance = isolatedArray.some((el) => el.booked === true);
 
           //console.log('isolatedArray, UpdateEnd2', isolatedArray);
@@ -492,7 +575,10 @@ export default function Booking({ john }: { john: Bookings[] }) {
             errorMessagePopUp(tid, userChoices.endTime.time, isolatedArray);
             setOpenDialogAlert(true);
           } else {
-            let newBookArray: BookingTimeSlot[] = bookingDateTimes.slice(userChoices?.startTime?.index, index + 1);
+            let newBookArray: BookingTimeSlot[] = bookingDateTimes.slice(
+              userChoices?.startTime?.index,
+              index + 1
+            );
             for (let i = 0; i < newBookArray.length; i++) {
               newBookTimes.push(newBookArray[i].time);
             }
@@ -516,7 +602,9 @@ export default function Booking({ john }: { john: Bookings[] }) {
     }
   }
 
-  const disabledDays123 = (numberOfDays: number): Matcher | Matcher[] | undefined => {
+  const disabledDays123 = (
+    numberOfDays: number
+  ): Matcher | Matcher[] | undefined => {
     const disabledDays: Date[] = [];
     const daysInWeek = 7;
     // //console.log"numberOfDays", numberOfDays);
@@ -533,7 +621,9 @@ export default function Booking({ john }: { john: Bookings[] }) {
         const day = String(currentDate.getDate()).padStart(2, '0');
 
         // Format the date as "YYYY, MM, DD"
-        const formattedDate = `${Number(year)}, ${Number(month)}, ${Number(day)}`;
+        const formattedDate = `${Number(year)}, ${Number(month)}, ${Number(
+          day
+        )}`;
 
         disabledDays.push(new Date(formattedDate));
       }
@@ -558,7 +648,11 @@ export default function Booking({ john }: { john: Bookings[] }) {
         futureDate.setDate(currentDate.getDate() + numberOfDays);
 
         // Check if the inputDate is between currentDate and futureDate
-        if (inputDate >= currentDate && inputDate <= futureDate && userChoices?.amount !== undefined) {
+        if (
+          inputDate >= currentDate &&
+          inputDate <= futureDate &&
+          userChoices?.amount !== undefined
+        ) {
           // console.log('2');
           // console.log(john[1]);
           const PCS: PCObjects = {
@@ -580,7 +674,9 @@ export default function Booking({ john }: { john: Bookings[] }) {
             // @ts-ignore
             for (const entry of PCS[pc]) {
               // Find the corresponding entry in the resultArray or create a new one
-              const resultEntry: BookingTimeSlot | undefined = resultArray.find((item) => item.time === entry.time);
+              const resultEntry: BookingTimeSlot | undefined = resultArray.find(
+                (item) => item.time === entry.time
+              );
               if (resultEntry) {
                 // console.log('inputDate', inputDate);
                 // console.log('PCS[pc]', PCS[pc]);
@@ -611,7 +707,7 @@ export default function Booking({ john }: { john: Bookings[] }) {
               //@ts-ignore
               // console.log(slot.bookedCount < maxPC && nextSlot.bookedCount < maxPC);
               //@ts-ignore
-              return slot.bookedCount < maxPC && nextSlot.bookedCount < maxPC;
+              return slot.bookedCount < maxPC && nextSlot < maxPC;
             }
             // return false;
           });
@@ -638,7 +734,11 @@ export default function Booking({ john }: { john: Bookings[] }) {
   const disabledDays: Matcher | Matcher[] | undefined = disabledDays123(21);
 
   // function bookPCTimes(PC: BookingTimeSlot[], times: string[]) {}
-  function errorMessagePopUp(start: string | undefined, slut: string, arr: BookingTimeSlot[]) {
+  function errorMessagePopUp(
+    start: string | undefined,
+    slut: string,
+    arr: BookingTimeSlot[]
+  ) {
     const errorTimes: string[] = [];
     for (let i = 0; i < arr.length; i++) {
       if (arr[i].booked === true) {
@@ -651,22 +751,49 @@ export default function Booking({ john }: { john: Bookings[] }) {
 
   const timeChosenConstStart = () => {
     if (userChoices?.startTime?.index === undefined && timeChosen.time === '') {
-      return <span className='font-bold text-accentCol'>Du skal væle en start tid!</span>;
-    } else if (timeChosen.time !== '' && userChoices?.startTime?.index === undefined) {
-      return <span className='font-bold text-accentCol'>{timeChosen.time}</span>;
+      return (
+        <span className='font-bold text-accentCol'>
+          Du skal væle en start tid!
+        </span>
+      );
+    } else if (
+      timeChosen.time !== '' &&
+      userChoices?.startTime?.index === undefined
+    ) {
+      return (
+        <span className='font-bold text-accentCol'>{timeChosen.time}</span>
+      );
     } else {
-      return <span className='font-bold text-accentCol'>{userChoices?.startTime?.time}</span>;
+      return (
+        <span className='font-bold text-accentCol'>
+          {userChoices?.startTime?.time}
+        </span>
+      );
     }
   };
 
   const timeChosenConstEnd = () => {
     if (timeChosen.index !== undefined) {
       if (timeChosen.index === 0) {
-        return <span className='font-bold text-accentCol'>Vælg et sluttidspunkt.</span>;
+        return (
+          <span className='font-bold text-accentCol'>
+            Vælg et sluttidspunkt.
+          </span>
+        );
       } else if (timeChosen.index === 12) {
-        return <span className='font-bold text-accentCol'>Du kan ikke starte klokken 20.00, så vælg en tid der er din start tid - din bandit :-) </span>;
+        return (
+          <span className='font-bold text-accentCol'>
+            Du kan ikke starte klokken 20.00, så vælg en tid der er din start
+            tid - din bandit :-){' '}
+          </span>
+        );
       } else if (timeChosen.index > 0) {
-        return <span className='font-bold text-accentCol'>Vælg entent et tidligere tidspunkt for at ændre din start tid, eller et senere tidspunkt for at vælge din sluttid.</span>;
+        return (
+          <span className='font-bold text-accentCol'>
+            Vælg entent et tidligere tidspunkt for at ændre din start tid, eller
+            et senere tidspunkt for at vælge din sluttid.
+          </span>
+        );
       }
     }
   };
@@ -690,21 +817,40 @@ export default function Booking({ john }: { john: Bookings[] }) {
     <>
       <Head>
         <title>Book din Gaming Oplevelse hos Next Level Gaming</title>
-        <meta name='description' content='Reserver din gaming session hos Next Level Gaming. Vores online booking system gør det nemt at sikre pladser og computere til din næste gaming oplevelse. Perfekt til både individuelle spillere og grupper, vores center tilbyder fleksible bookinger. Nyd topmoderne gaming udstyr og en hyggelig atmosfære. Book nu for at sikre en uforglemmelig gaming dag i Glostrup.' />
+        <meta
+          name='description'
+          content='Reserver din gaming session hos Next Level Gaming. Vores online booking system gør det nemt at sikre pladser og computere til din næste gaming oplevelse. Perfekt til både individuelle spillere og grupper, vores center tilbyder fleksible bookinger. Nyd topmoderne gaming udstyr og en hyggelig atmosfære. Book nu for at sikre en uforglemmelig gaming dag i Glostrup.'
+        />
       </Head>
       <Layout>
         <main>
-          <Hero header="Book DK's mest unikke gaming oplevelse" redWord={['unikke']} isFrontPage={false} content='På Next Level Gaming kan du forudbestille computere og sikre dig en plads til at nyde spillet uden travlhed. Book nu for at garantere en hyggelig og afslappende spiloplevelse, hvor du kan dykke ned i nye verdener og opleve spændingen ved gaming i komfortable omgivelser. Gør din spilletid speciel med vores avancerede udstyr og venlige atmosfære.' />
+          <Hero
+            header="Book DK's mest unikke gaming oplevelse"
+            redWord={['unikke']}
+            isFrontPage={false}
+            content='På Next Level Gaming kan du forudbestille computere og sikre dig en plads til at nyde spillet uden travlhed. Book nu for at garantere en hyggelig og afslappende spiloplevelse, hvor du kan dykke ned i nye verdener og opleve spændingen ved gaming i komfortable omgivelser. Gør din spilletid speciel med vores avancerede udstyr og venlige atmosfære.'
+          />
           {bookingComplete !== false ? (
             // @ts-ignore
             <BookingRecieved userChoices={userChoices} />
           ) : (
             <AnimatePresence>
-              <section id='bookingBlock' className='spacer'>
-                <article id='antalGuests' className='w-full' ref={amountRef}>
+              <section
+                id='bookingBlock'
+                className='spacer'
+              >
+                <article
+                  id='antalGuests'
+                  className='w-full'
+                  ref={amountRef}
+                >
                   <div className='bg-contrastCol mt-8 p-4 lg:block min-h-[152px]'>
                     <h4 className='mt-0'>Hvor mange computere vil du booke?</h4>
-                    <p> For at vi kan checke om der er PC'er nok til jer, så vil vi gerne vide hvor mange I kommer. </p>
+                    <p>
+                      {' '}
+                      For at vi kan checke om der er PC'er nok til jer, så vil
+                      vi gerne vide hvor mange I kommer.{' '}
+                    </p>
                   </div>
                   <div className='bg-contrastCol md:mt-8 p-4 lg:block min-h-[152px]'>
                     <h4 className='mt-0 flex flex-row align-middle gap-x-2'>
@@ -712,11 +858,22 @@ export default function Booking({ john }: { john: Bookings[] }) {
                       <span>Antal computere</span>
                     </h4>
                     <span>(max 5)</span>
-                    <span className={openAmount ? 'block text-accentCol' : 'hidden'}>Du må max vælge et tal mellem 1-5.</span>
-                    <Input type='number' className='border-white remove-arrow' onChange={handleAmountChange} value={amountValue}></Input>
+                    <span
+                      className={openAmount ? 'block text-accentCol' : 'hidden'}
+                    >
+                      Du må max vælge et tal mellem 1-5.
+                    </span>
+                    <Input
+                      type='number'
+                      className='border-white remove-arrow'
+                      onChange={handleAmountChange}
+                      value={amountValue}
+                    ></Input>
                   </div>
                 </article>
-                {amountValue !== undefined && Number(amountValue) < 6 && Number(amountValue) > 0 ? (
+                {amountValue !== undefined &&
+                Number(amountValue) < 6 &&
+                Number(amountValue) > 0 ? (
                   <motion.article
                     ref={dateRef}
                     id='date'
@@ -734,9 +891,12 @@ export default function Booking({ john }: { john: Bookings[] }) {
                       <h4 className='mt-0'>Hvilken dag vil i komme?</h4>
                       <p>
                         {' '}
-                        I kan booke tid 14 dage frem og alle ledige datoer vil være markeret med grøn farve. Dage vi er fuldt bookede er market med rød. <br />
+                        I kan booke tid 14 dage frem og alle ledige datoer vil
+                        være markeret med grøn farve. Dage vi er fuldt bookede
+                        er market med rød. <br />
                         <br />
-                        <b>Obs.</b> vi modtager ikke bookinger fredag og lørdag. Alle andre dage kan du booke ml. 14 - 20
+                        <b>Obs.</b> vi modtager ikke bookinger fredag og lørdag.
+                        Alle andre dage kan du booke ml. 14 - 20
                       </p>
                     </div>
                     <div className='bg-contrastCol md:mt-8 p-4 lg:block'>
@@ -744,7 +904,11 @@ export default function Booking({ john }: { john: Bookings[] }) {
                         <FaCalendarAlt className='inline-block mt-0.4' />
                         <span>Dato</span>
                       </h4>
-                      <span>{userChoices?.date === undefined ? '' : `${formattedDate(userChoices?.date)}`}</span>
+                      <span>
+                        {userChoices?.date === undefined
+                          ? ''
+                          : `${formattedDate(userChoices?.date)}`}
+                      </span>
                       <DatePicker
                         // @ts-ignore
                         disabledDays={disabledDays}
@@ -755,7 +919,10 @@ export default function Booking({ john }: { john: Bookings[] }) {
                 ) : (
                   ''
                 )}
-                {amountValue !== undefined && Number(amountValue) < 6 && Number(amountValue) > 0 && userChoices?.date !== undefined ? (
+                {amountValue !== undefined &&
+                Number(amountValue) < 6 &&
+                Number(amountValue) > 0 &&
+                userChoices?.date !== undefined ? (
                   <motion.article
                     ref={timeRef}
                     id='time'
@@ -771,12 +938,18 @@ export default function Booking({ john }: { john: Bookings[] }) {
                   >
                     <div className='bg-contrastCol mt-8 p-4 lg:block'>
                       <h4 className='mt-0'>Hvor længe skal i game?</h4>
-                      <p>Vi booker i tidsrummet 14.00 - 20.00, vælg hvor mange timer og hvornår i vil booke pc'er, ud fra de ledige tider for neden</p>
+                      <p>
+                        Vi booker i tidsrummet 14.00 - 20.00, vælg hvor mange
+                        timer og hvornår i vil booke pc'er, ud fra de ledige
+                        tider for neden
+                      </p>
                     </div>
                     <div className='bg-contrastCol md:mt-8 p-4 lg:block'>
                       <h4 className='mt-0 flex flex-row align-middle gap-x-2'>
                         <IoTime className='inline-block mt-0.4' />
-                        <span onClick={() => console.log(bookingDateTimes)}>Antal timer</span>
+                        <span onClick={() => console.log(bookingDateTimes)}>
+                          Antal timer
+                        </span>
                         {/* <button className='p-4 border border-white ' onClick={() => //console.log(bookTimes)}>
                         Check Booking Status
                       </button>
@@ -794,10 +967,15 @@ export default function Booking({ john }: { john: Bookings[] }) {
                       </button> */}
                       </h4>
                       <p>
-                        <span onClick={() => console.log(timeChosen, userChoices)}>Start tid - </span>
+                        <span
+                          onClick={() => console.log(timeChosen, userChoices)}
+                        >
+                          Start tid -{' '}
+                        </span>
                         {timeChosenConstStart()}
                       </p>
-                      {timeChosen.time === '' && userChoices?.startTime?.index === undefined ? (
+                      {timeChosen.time === '' &&
+                      userChoices?.startTime?.index === undefined ? (
                         ''
                       ) : (
                         <motion.article
@@ -813,12 +991,20 @@ export default function Booking({ john }: { john: Bookings[] }) {
                         >
                           <p>
                             <span>Slut tid - </span>
-                            {timeChosen.time === '' && userChoices?.startTime?.index !== undefined ? <span className='font-bold text-accentCol'>{userChoices?.endTime?.time}</span> : <>{timeChosenConstEnd()}</>}
+                            {timeChosen.time === '' &&
+                            userChoices?.startTime?.index !== undefined ? (
+                              <span className='font-bold text-accentCol'>
+                                {userChoices?.endTime?.time}
+                              </span>
+                            ) : (
+                              <>{timeChosenConstEnd()}</>
+                            )}
                           </p>
                         </motion.article>
                       )}
                       <div className='mt-3'>
-                        {userChoices?.startTime?.index === undefined || userChoices?.endTime?.time === undefined ? (
+                        {userChoices?.startTime?.index === undefined ||
+                        userChoices?.endTime?.time === undefined ? (
                           ''
                         ) : (
                           <motion.article
@@ -846,41 +1032,80 @@ export default function Booking({ john }: { john: Bookings[] }) {
                         )}
                       </div>
                       <div className=' timeslots flex gap-2 flex-wrap mt-3'>
-                        {bookingDateTimes.map((time: BookingTimeSlot, index: number) => (
-                          <div className='relative flex justify-between gap-2 flex-wrap mt-3'>
-                            {time.booked || (userChoices.amount !== undefined && userChoices.amount !== null && time.bookedCount !== undefined && userChoices?.amount > 5 - time?.bookedCount) ? (
-                              <BookedTimeSlot time={time} index={index} allTimes={bookingDateTimes} userChoices={userChoices} />
-                            ) : (
-                              //  <input type="checkbox" name="tid" id={time.time} key={index} className="absolute z-0 opacity-0 peer" defaultChecked={bTS.includes(index)} disabled={time.booked} />
-                              // <label
-                              //   htmlFor={time.time}
-                              //   onClick={() => addTime(time.time, index)}
-                              //   className={
-                              //     (startTid.index !== undefined && slutTid.index !== undefined && startTid.index !== null && slutTid.index !== null && index >= startTid.index && index <= slutTid.index) || startTid.index === index || slutTid.index === index
-                              //       ? "z-10 min-w-[85px] text-center py-2 border border-accentCol font-semibold transition ease-in-out duration-150 cursor-pointer bg-accentCol peer-disabled:bg-slate-500 peer-disabled:border-slate-500 peer-disabled:text-slate-700 peer-disabled:pointer-events-none peer-disabled:cursor-not-allowed"
-                              //       : "z-10 min-w-[85px] text-center py-2 border border-accentCol font-semibold transition ease-in-out duration-150 cursor-pointer peer-disabled:bg-slate-500 peer-disabled:border-slate-500 peer-disabled:text-slate-700 peer-disabled:pointer-events-none peer-disabled:cursor-not-allowed"
-                              //   }
-                              // >
-                              //   {time.time}
-                              // </label>
-                              <AvailibleTimeSlot className={bookTimes.includes(time.time) ? 'z-10 min-w-[85px] text-center py-2 border border-accentCol font-semibold transition ease-in-out duration-150 cursor-pointer bg-accentCol' : 'z-10 min-w-[85px] text-center py-2 border border-accentCol font-semibold transition ease-in-out duration-150 cursor-pointer'} defaultChecked={bookTimes.includes(time.time)} index={index} onClick={() => addTime(time.time, index)} time={time} />
-                            )}
-                          </div>
-                        ))}
-                        <AlertDialog open={openDialogAlert} onOpenChange={setOpenDialogAlert}>
+                        {bookingDateTimes.map(
+                          (time: BookingTimeSlot, index: number) => (
+                            <div className='relative flex justify-between gap-2 flex-wrap mt-3'>
+                              {time.booked ||
+                              (userChoices.amount !== undefined &&
+                                userChoices.amount !== null &&
+                                time.bookedCount !== undefined &&
+                                userChoices?.amount > 5 - time?.bookedCount) ? (
+                                <BookedTimeSlot
+                                  time={time}
+                                  index={index}
+                                  allTimes={bookingDateTimes}
+                                  userChoices={userChoices}
+                                />
+                              ) : (
+                                //  <input type="checkbox" name="tid" id={time.time} key={index} className="absolute z-0 opacity-0 peer" defaultChecked={bTS.includes(index)} disabled={time.booked} />
+                                // <label
+                                //   htmlFor={time.time}
+                                //   onClick={() => addTime(time.time, index)}
+                                //   className={
+                                //     (startTid.index !== undefined && slutTid.index !== undefined && startTid.index !== null && slutTid.index !== null && index >= startTid.index && index <= slutTid.index) || startTid.index === index || slutTid.index === index
+                                //       ? "z-10 min-w-[85px] text-center py-2 border border-accentCol font-semibold transition ease-in-out duration-150 cursor-pointer bg-accentCol peer-disabled:bg-slate-500 peer-disabled:border-slate-500 peer-disabled:text-slate-700 peer-disabled:pointer-events-none peer-disabled:cursor-not-allowed"
+                                //       : "z-10 min-w-[85px] text-center py-2 border border-accentCol font-semibold transition ease-in-out duration-150 cursor-pointer peer-disabled:bg-slate-500 peer-disabled:border-slate-500 peer-disabled:text-slate-700 peer-disabled:pointer-events-none peer-disabled:cursor-not-allowed"
+                                //   }
+                                // >
+                                //   {time.time}
+                                // </label>
+                                <AvailibleTimeSlot
+                                  className={
+                                    bookTimes.includes(time.time)
+                                      ? 'z-10 min-w-[85px] text-center py-2 border border-accentCol font-semibold transition ease-in-out duration-150 cursor-pointer bg-accentCol'
+                                      : 'z-10 min-w-[85px] text-center py-2 border border-accentCol font-semibold transition ease-in-out duration-150 cursor-pointer'
+                                  }
+                                  defaultChecked={bookTimes.includes(time.time)}
+                                  index={index}
+                                  onClick={() => addTime(time.time, index)}
+                                  time={time}
+                                />
+                              )}
+                            </div>
+                          )
+                        )}
+                        <AlertDialog
+                          open={openDialogAlert}
+                          onOpenChange={setOpenDialogAlert}
+                        >
                           <AlertDialogContent className='max-w-[300px] sm:max-w-[400px]'>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Du kan ikke booke her.</AlertDialogTitle>
+                              <AlertDialogTitle>
+                                Du kan ikke booke her.
+                              </AlertDialogTitle>
                               <AlertDialogDescription className='text-left'>
-                                Det er ikke muligt at booke fra <span className='font-semibold'>{alertDetail?.start}</span> til <span className='font-semibold'>{alertDetail?.slut}</span>, da følgende tider er fuldt bookede:{' '}
+                                Det er ikke muligt at booke fra{' '}
+                                <span className='font-semibold'>
+                                  {alertDetail?.start}
+                                </span>{' '}
+                                til{' '}
+                                <span className='font-semibold'>
+                                  {alertDetail?.slut}
+                                </span>
+                                , da følgende tider er fuldt bookede:{' '}
                                 <ul className='flex flex-col pt-2'>
                                   {alertDetail?.arr.map((tid) => (
                                     <li className='mt-1'>
-                                      <span className='font-semibold'>{tid}</span>
+                                      <span className='font-semibold'>
+                                        {tid}
+                                      </span>
                                     </li>
                                   ))}
                                 </ul>
-                                <span className='mt-2 block'>Vælg en ny tid, som ikke går ind over de bookede tider.</span>
+                                <span className='mt-2 block'>
+                                  Vælg en ny tid, som ikke går ind over de
+                                  bookede tider.
+                                </span>
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -894,7 +1119,12 @@ export default function Booking({ john }: { john: Bookings[] }) {
                 ) : (
                   ''
                 )}
-                {amountValue !== undefined && Number(amountValue) < 6 && Number(amountValue) > 0 && userChoices?.date !== undefined && userChoices?.startTime?.index !== undefined && userChoices.endTime?.index !== undefined ? (
+                {amountValue !== undefined &&
+                Number(amountValue) < 6 &&
+                Number(amountValue) > 0 &&
+                userChoices?.date !== undefined &&
+                userChoices?.startTime?.index !== undefined &&
+                userChoices.endTime?.index !== undefined ? (
                   <motion.article
                     id='personalInfo'
                     ref={bookingRef}
@@ -910,7 +1140,10 @@ export default function Booking({ john }: { john: Bookings[] }) {
                     }}
                   >
                     {/* <div ref={bookingRef}> */}
-                    <BookingForm userChoices={userChoices} bookingOverview={john} />
+                    <BookingForm
+                      userChoices={userChoices}
+                      bookingOverview={john}
+                    />
                     {/* </div> */}
                   </motion.article>
                 ) : (
