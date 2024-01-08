@@ -355,14 +355,14 @@ export const BookingForm: React.FC<BookingProps> = ({ userChoices, bookingOvervi
           <h4>Booking Oplysninger</h4>
 
           <p className='flex flex-row align-middle'>
-            <FaCalendarAlt className='inline-block mr-3 text-accentCol' /> <span>{formattedDate(dato as string)}</span>
+            <FaCalendarAlt className='inline-block mr-3 text-accentCol mt-1 ' /> <span className='text-lg'>{formattedDate(dato as string)}</span>
           </p>
           <p className='flex flex-row align-middle'>
-            <FaUserGroup className='inline-block mr-3 text-accentCol' /> <span>{antal} computere</span>
+            <FaUserGroup className='inline-block mr-3 text-accentCol mt-1 ' /> <span className='text-lg'>{antal} computere</span>
           </p>
           <p className='flex flex-row align-middle'>
-            <IoTime className='inline-block mr-3 text-accentCol' />
-            <span>
+            <IoTime className='inline-block mr-3 text-accentCol mt-1 ' />
+            <span className='text-lg'>
               {timerImellem()} {timerImellem() > 1 ? 'timer' : 'time'} ({startTid} - {slutTid})
             </span>
           </p>
