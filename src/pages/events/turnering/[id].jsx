@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Layout } from '@/Layout';
 import { format } from 'date-fns';
-import { FaCalendar, FaCoins, FaGamepad, FaMoneyBill } from 'react-icons/fa';
+import { FaCalendar, FaCoins, FaGamepad, FaMoneyBill, FaTrophy } from 'react-icons/fa';
 import { BsFillPeopleFill } from 'react-icons/bs';
 import { Link } from '@radix-ui/react-navigation-menu';
 import Countdown from 'react-countdown';
@@ -176,6 +176,12 @@ function page() {
                         <FaCoins size='12' /> Tilmeldingspris
                       </p>
                       <p className='mt-0'>{data.gebyr}kr.</p>
+                    </div>
+                    <div className='p-3 w-full flex flex-col gap-2 bg-contrastCol rounded-sm'>
+                      <p className='mt-0 flex gap-1 items-center font-bold uppercase'>
+                        <FaTrophy size='12' /> Premie
+                      </p>
+                      <p className='mt-0'>{data.premie}</p>
                     </div>
                   </div>
                   <div>
