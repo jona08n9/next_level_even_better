@@ -26,7 +26,6 @@ import { bookingCompleteAtom } from '@/states/store';
 import { useAtom } from 'jotai';
 import { BookingRecieved } from '@/modules/BookingRecieved/bookingRecieved';
 import { useRouter } from 'next/router';
-import { log } from 'console';
 import Head from 'next/head';
 
 export async function getServerSideProps() {
@@ -75,22 +74,17 @@ export default function Booking({ john }: { john: Bookings[] }) {
       router.events.off('routeChangeComplete', handleRouteChange);
     };
   }, [router.events]);
+
   useEffect(() => {
     if (bookingRef.current && userChoices?.startTime?.index !== undefined && userChoices?.amount && userChoices.date) {
       setTimeout(() => {
         //@ts-ignore
         bookingRef.current.scrollIntoView({ behavior: 'smooth' });
       }, 425);
-      //console.log('1');
-      //console.log(userChoices.startTime);
-      //console.log(userChoices.endTime);
     } else if (timeRef.current && userChoices?.amount && userChoices.date && userChoices?.startTime?.index === undefined && userChoices?.endTime?.index === undefined && timeChosen.index === undefined) {
       timeRef.current.scrollIntoView({ behavior: 'smooth' });
-      //console.log('2');
     } else if (dateRef.current && userChoices?.amount && userChoices?.startTime?.index === undefined && timeChosen.index === undefined) {
       dateRef.current?.scrollIntoView({ behavior: 'smooth' });
-      //console.log('3');
-      //console.log(userChoices.startTime);
     }
   }, [userChoices]);
 
@@ -124,9 +118,9 @@ export default function Booking({ john }: { john: Bookings[] }) {
         setAmountValue('');
       }
     } else {
-      //console.log('HER5');
       setOpenAmount(true);
     }
+    console.log('amountChosen', amountChosen);
   };
 
   const handleDateChange = (e: string) => {
@@ -144,15 +138,19 @@ export default function Booking({ john }: { john: Bookings[] }) {
       //console.log(e);
       const date = new Date(e);
       const Year = date.getFullYear();
+      console.log(Year);
       const Month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+      console.log(Month);
       const Day = String(date.getDate()).padStart(2, '0');
+      console.log(Day);
 
-      const FormattedDate = `${Number(Year)}-${Number(Month)}-${Number(Day)}`;
+      const FormattedDate = `${Year}-${Month}-${Day}`;
 
       setUserChoices((prevData) => ({
         ...prevData,
         date: FormattedDate,
       }));
+      console.log('F', FormattedDate);
       bookingTimes(FormattedDate);
       editBookedTimes('', 0, BookingTypes.ClearAll);
     }
@@ -164,10 +162,17 @@ export default function Booking({ john }: { john: Bookings[] }) {
       john.find((booking) => booking.date === chosenDate)
     );
 
+    // console.log(new Date(john[1].date));
+    // console.log(new Date(chosenDate));
+    // console.log(john[1].date);
+    // console.log(chosenDate);
+    // console.log(matchingDate);
     if (!matchingDate) {
       setBookingDateTimes(timeSlots);
+      console.log('!matchingDate, 171');
       return;
     }
+    console.log('matchingDate, 174');
     //@ts-ignore
     const dateBooking = john.find((booking) => booking.date === chosenDate);
     const PCS: PCObjects = {
@@ -184,6 +189,7 @@ export default function Booking({ john }: { john: Bookings[] }) {
       // Iterate over each entry for the current PC
       // @ts-ignore
       for (const entry of PCS[pc]) {
+        console.log(entry);
         // Find the corresponding entry in the resultArray or create a new one
         const resultEntry: BookingTimeSlot | undefined = availibleTimes.find((item) => item.time === entry.time);
 
@@ -227,7 +233,7 @@ export default function Booking({ john }: { john: Bookings[] }) {
         }
       }
     }
-
+    console.log('availibleTimes', availibleTimes);
     setBookingDateTimes(availibleTimes);
   }
 
@@ -535,83 +541,96 @@ export default function Booking({ john }: { john: Bookings[] }) {
 
     disabledDays.push(pastDays());
     disabledDays.push(futureDays(numberOfDays));
-    // @ts-ignore
-    disabledDays.push(BookedDays(numberOfDays, john));
+    if (john.length > 0) {
+      // console.log('1');
+      for (let i = 0; i < john.length; i++) {
+        const date = john[i].date;
+        const inputDate = new Date(date);
 
-    function BookedDays(days: number, bookings: Bookings[]) {
-      if (bookings.length > 0) {
-        for (let i = 0; i < bookings.length; i++) {
-          const date = bookings[i].date;
-          const inputDate = new Date(date);
+        // console.log(date);
+        // console.log(inputDate);
 
-          // Get the current date
-          const currentDate = new Date();
+        // Get the current date
+        const currentDate = new Date();
 
-          // Calculate the date 14 days in the future
-          const futureDate = new Date();
-          futureDate.setDate(currentDate.getDate() + days);
+        // Calculate the date 14 days in the future
+        const futureDate = new Date();
+        futureDate.setDate(currentDate.getDate() + numberOfDays);
 
-          // Check if the inputDate is between currentDate and futureDate
-          if (inputDate >= currentDate && inputDate <= futureDate && userChoices?.amount !== undefined) {
-            // //console.log"The date is between today and the latest possible day in the future.");
-            const PCS: PCObjects = {
-              PC1: bookings[i].PC1,
-              PC2: bookings[i].PC2,
-              PC3: bookings[i].PC1,
-              PC4: bookings[i].PC1,
-              PC5: bookings[i].PC1,
-            };
-            // //console.logPCS);
+        // Check if the inputDate is between currentDate and futureDate
+        if (inputDate >= currentDate && inputDate <= futureDate && userChoices?.amount !== undefined) {
+          // console.log('2');
+          // console.log(john[1]);
+          const PCS: PCObjects = {
+            PC1: john[i].PC1,
+            PC2: john[i].PC2,
+            PC3: john[i].PC3,
+            PC4: john[i].PC4,
+            PC5: john[i].PC5,
+          };
 
-            // Create a new array to store the results
-            const resultArray: BookingTimeSlot[] = [];
+          // console.log('PCS', PCS);
 
-            // Iterate over each key in the inputObject
-            for (const pc in PCS) {
-              // Iterate over each entry for the current PC
-              // @ts-ignore
-              for (const entry of PCS[pc]) {
-                // Find the corresponding entry in the resultArray or create a new one
-                const resultEntry: BookingTimeSlot | undefined = resultArray.find((item) => item.time === entry.time);
-                if (resultEntry) {
-                  // If the entry exists, update the count based on the booked status
-                  if (entry.booked) {
-                    resultEntry.bookedCount = (resultEntry.bookedCount || 0) + 1;
-                  }
-                } else {
-                  // If the entry doesn't exist, create a new one
-                  const newEntry = {
-                    time: entry.time,
-                    bookedCount: entry.booked ? 1 : 0,
-                  };
-                  resultArray.push(newEntry);
+          // Create a new array to store the results
+          const resultArray: BookingTimeSlot[] = [];
+
+          // Iterate over each key in the inputObject
+          for (const pc in PCS) {
+            // Iterate over each entry for the current PC
+            // @ts-ignore
+            for (const entry of PCS[pc]) {
+              // Find the corresponding entry in the resultArray or create a new one
+              const resultEntry: BookingTimeSlot | undefined = resultArray.find((item) => item.time === entry.time);
+              if (resultEntry) {
+                // console.log('inputDate', inputDate);
+                // console.log('PCS[pc]', PCS[pc]);
+                // console.log('entry', entry);
+                // If the entry exists, update the count based on the booked status
+                if (entry.booked) {
+                  resultEntry.bookedCount = (resultEntry.bookedCount || 0) + 1;
                 }
+              } else {
+                // If the entry doesn't exist, create a new one
+                const newEntry = {
+                  time: entry.time,
+                  bookedCount: entry.booked ? 1 : 0,
+                };
+                resultArray.push(newEntry);
               }
             }
+          }
 
-            // //console.log"resultArray", resultArray);
-            const PCLedigeTider = resultArray.some((slot, index) => {
+          // console.log('resultArray', resultArray);
+          const PCLedigeTider = resultArray.some((slot, index) => {
+            //@ts-ignore
+            const maxPC = 6 - userChoices?.amount;
+
+            if (index < resultArray.length && slot.bookedCount !== undefined) {
+              // console.log('3');
+              const nextSlot = resultArray[index + 1];
               //@ts-ignore
-              const maxPC = 6 - userChoices?.amount;
-              if (index < resultArray.length - 1 && slot.bookedCount !== undefined) {
-                const nextSlot = resultArray[index + 1];
-                //@ts-ignore
-                return slot.bookedCount < maxPC && nextSlot.bookedCount < maxPC;
-              }
-              return false;
-            });
-            if (PCLedigeTider === true) {
-              //console.log('ledige tider', PCLedigeTider);
-            } else {
-              //console.log('ledige tider?', PCLedigeTider);
-              // //console.log(new Date(bookings[i].date));
-              disabledDays.push(new Date(bookings[i].date));
+              // console.log(slot.bookedCount < maxPC && nextSlot.bookedCount < maxPC);
+              //@ts-ignore
+              return slot.bookedCount < maxPC && nextSlot.bookedCount < maxPC;
             }
+            // return false;
+          });
+          // console.log('resultArray2', resultArray);
+          // console.log('PCLedigeTider', PCLedigeTider);
+          if (PCLedigeTider === true) {
+            // console.log('4');
+            //console.log('ledige tider', PCLedigeTider);
+          } else {
+            // console.log('5');
+            //console.log('ledige tider?', PCLedigeTider);
+            // //console.log(new Date(bookings[i].date));
+            disabledDays.push(new Date(john[i].date));
           }
         }
       }
     }
     // //console.log"disabledDays", disabledDays);
+    console.log('bookingDateTimes', bookingDateTimes);
 
     return disabledDays;
   };
@@ -757,7 +776,7 @@ export default function Booking({ john }: { john: Bookings[] }) {
                     <div className='bg-contrastCol md:mt-8 p-4 lg:block'>
                       <h4 className='mt-0 flex flex-row align-middle gap-x-2'>
                         <IoTime className='inline-block mt-0.4' />
-                        <span>Antal timer</span>
+                        <span onClick={() => console.log(bookingDateTimes)}>Antal timer</span>
                         {/* <button className='p-4 border border-white ' onClick={() => //console.log(bookTimes)}>
                         Check Booking Status
                       </button>
@@ -829,7 +848,7 @@ export default function Booking({ john }: { john: Bookings[] }) {
                       <div className=' timeslots flex gap-2 flex-wrap mt-3'>
                         {bookingDateTimes.map((time: BookingTimeSlot, index: number) => (
                           <div className='relative flex justify-between gap-2 flex-wrap mt-3'>
-                            {time.booked ? (
+                            {time.booked || (userChoices.amount !== undefined && userChoices.amount !== null && time.bookedCount !== undefined && userChoices?.amount > 5 - time?.bookedCount) ? (
                               <BookedTimeSlot time={time} index={index} allTimes={bookingDateTimes} userChoices={userChoices} />
                             ) : (
                               //  <input type="checkbox" name="tid" id={time.time} key={index} className="absolute z-0 opacity-0 peer" defaultChecked={bTS.includes(index)} disabled={time.booked} />
