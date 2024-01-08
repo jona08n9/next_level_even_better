@@ -7,6 +7,9 @@ import TurneringCards from '@/components/Cards/TurneringCards';
 import { showAddTurneringAtom } from '@/states/store';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TurneringsListe } from './TurneringsListe';
+import { Button } from '@/components/Button/Button';
+import { useAtom } from 'jotai';
+import { PlusCircle } from 'lucide-react';
 
 export const fetchDBTurneringData = async () => {
   let { data, error } = await supabase.from('turneringer').select('*');
@@ -16,6 +19,7 @@ export const fetchDBTurneringData = async () => {
 export default function Turneringer() {
   // COMMENT OUT FROM HERE TO DISABLE LOGIN GUARD
   const router = useRouter();
+  const [showAddTurnering, setShowAddTurnering] = useAtom(showAddTurneringAtom);
 
   const queryClient = new QueryClient();
 
@@ -50,6 +54,13 @@ export default function Turneringer() {
             <section>
               <div className='flex justify-center'>
                 <div className='spacer w-full'>
+                  <Button
+                    onClick={() => setShowAddTurnering(true)}
+                    size='default'
+                    className='justify-between w-fit uppercase font-bold hover:bg-transparent hover:border-accentCol rounded border-2 border-transparent transition-colors duration-300 md:mr-auto mb-3'
+                  >
+                    Tilføj turnering <PlusCircle className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+                  </Button>
                   <TurneringsListe />
                 </div>
               </div>

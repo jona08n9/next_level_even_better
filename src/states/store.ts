@@ -1,4 +1,5 @@
 import { Game, GameRoot } from '@/Types/gamelist';
+import { Sponsor } from '@/pages/admin/test';
 import { Turnering } from '@/pages/events/turneringer';
 import { atom } from 'jotai';
 
@@ -19,3 +20,4 @@ export const addTurneringAtom = atom<Turnering>({} as Turnering);
 
 export const showAddTurneringAtom = atom<boolean>(false);
 export const showEditTurneringAtom = atom<boolean>(false);
+export const sponsorsAtom = atom<Sponsor[]>([]);

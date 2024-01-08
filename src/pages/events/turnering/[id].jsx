@@ -15,7 +15,7 @@ import { Button } from '../../../components/Button/Button';
 function page() {
   const router = useRouter();
   const [data, setData] = useState(null);
-  const [tilmeldingOpen, setTilmeldingOpen] = useState(true);
+  const [tilmeldingClosed, setTilmeldingClosed] = useState(true);
 
   const timestamp = data && data.tilmelding;
 
@@ -60,14 +60,14 @@ function page() {
       }
     };
 
-    if (Date.now() > Date.parse(timestamp)) {
+    if (Date.now() < Date.parse(timestamp)) {
       fetchData();
-      setTilmeldingOpen(false);
+      setTilmeldingClosed(false);
       console.log('closed');
     }
   }, [timestamp]);
 
-  console.log('tilmelding open?', tilmeldingOpen);
+  console.log('tilmelding open?', !tilmeldingClosed);
 
   console.log(data);
 
@@ -107,10 +107,10 @@ function page() {
                   <div className='flex gap-4 align-middle'>
                     <div
                       className={`${
-                        tilmeldingOpen ? 'bg-[#08ef8e]' : 'bg-accentCol'
+                        !tilmeldingClosed ? 'bg-[#08ef8e]' : 'bg-accentCol'
                       } w-fit px-2 self-center rounded-full flex`}
                     >
-                      {tilmeldingOpen ? (
+                      {!tilmeldingClosed ? (
                         <p className='text-primaryCol mt-0 font-medium uppercase'>
                           Tilmelding er åben
                         </p>
@@ -130,13 +130,11 @@ function page() {
                     </p>
                     <Button
                       className={`${
-                        !tilmeldingOpen
+                        tilmeldingClosed
                           ? 'bg-contrastCol border-contrastCol opacity-70 border cursor-not-allowed'
                           : ''
                       } mt-0 text-2xl font-bold px-8 py-6`}
-                      link={`${
-                        !tilmeldingOpen ? '' : '/om-os/kontakt?turnering'
-                      }`}
+                      link={`${tilmeldingClosed ? '' : '/om-os/kontakt?turnering'}`}
                     >
                       Tilmeld
                     </Button>
@@ -146,11 +144,10 @@ function page() {
             </header>
             <section className='flex justify-center'>
               <div className='spacer w-full flex-wrap flex justify-between'>
-                <div className='grow'>
+                <div>
                   <div
                     style={{
-                      gridTemplateColumns:
-                        'repeat(auto-fill, minmax(200px, 1fr))',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
                     }}
                     className='grid gap-3'
                   >
@@ -165,9 +162,7 @@ function page() {
                         <FaCalendar size='12' />
                         Dato
                       </p>
-                      <p className='mt-0'>
-                        {format(new Date(data.dato), 'dd/MM HH:mm')}
-                      </p>
+                      <p className='mt-0'>{format(new Date(data.dato), 'dd/MM HH:mm')}</p>
                     </div>
                     <div className='p-3 w-full flex flex-col gap-2 bg-contrastCol rounded-sm'>
                       <p className='mt-0 flex gap-1 items-center align-middle font-bold uppercase'>
@@ -184,15 +179,25 @@ function page() {
                     </div>
                   </div>
                   <div>
-                    <p className='text-xl uppercase font-bold'>
-                      {data.subheader}
-                    </p>
+                    <p className='text-xl uppercase font-bold'>{data.subheader}</p>
                     <p>{data.beskrivelse}</p>
                   </div>
                 </div>
 
                 <div>
                   <h4>Sponsorer</h4>
+                  <div className='flex flex-row gap-3'>
+                    {data.sponsorer.map(sponsor => (
+                      <figure>
+                        <Image
+                          src={sponsor.src}
+                          width={200}
+                          height={200}
+                        />
+                        <figcaption className='text-center'>{sponsor.name}</figcaption>
+                      </figure>
+                    ))}
+                  </div>
                 </div>
               </div>
             </section>

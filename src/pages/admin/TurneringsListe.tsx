@@ -11,8 +11,8 @@ import {
 import { EditTurneringSheet } from '../../components/AddChangeTurnering/EditTurneringSheet';
 import { fetchDBTurneringData } from './turnering';
 
-import { v4 as uuidv4 } from 'uuid';
 import { AddTurneringSheet } from '../../components/AddChangeTurnering/AddTurneringSheet';
+import { fetchSponsors, fileObject } from './test';
 
 export const TurneringsListe = () => {
   const [editTurnering, setEditTurnering] = useAtom(editTurneringAtom);
@@ -30,17 +30,20 @@ export const TurneringsListe = () => {
         queryKey: ['hydrate-gameDBData'],
         queryFn: () => fetchDBGameData(),
       },
+      { queryKey: ['hydrate-sponsorDBData'], queryFn: () => fetchSponsors() },
     ],
   });
   const { data: tData, isLoading: tDataIsLoading } = results[0];
 
   const { data: gData, isLoading: gDataIsLoading } = results[1];
+  const { data: sponsorData, isLoading: sponsorDataIsLoading } = results[2];
 
   return (
     <div className='grid gap-4 lg:grid-cols-3 md:grid-cols-2'>
       {tData &&
         tData.map(turnering => (
           <div
+            key={turnering.id}
             className='cursor-pointer'
             onClick={() => {
               console.log(turnering);
@@ -52,12 +55,12 @@ export const TurneringsListe = () => {
             <TurneringKort datas={turnering} />
           </div>
         ))}
-      <button onClick={() => setShowAddTurnering(true)}>CLICK ME MF</button>
 
       <EditTurneringSheet {...editTurnering} />
       <AddTurneringSheet
-        {...addTurnering}
+        turnering={addTurnering}
         gData={gData}
+        sponsorData={sponsorData?.props?.sponsors1 as fileObject[] | []}
       />
     </div>
   );

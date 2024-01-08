@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
-import { addTurneringAtom, showAddTurneringAtom } from '@/states/store';
+import { addTurneringAtom, showAddTurneringAtom, sponsorsAtom } from '@/states/store';
 import { Turnering } from '../../pages/events/turneringer';
 import { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -27,20 +27,32 @@ import ControlledEditableTextarea from '@/components/ControlledEditableTextArea/
 import Image from 'next/image';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import { da } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import { Game } from '@/Types/gamelist';
+import { Game, GameRoot } from '@/Types/gamelist';
+import Test, { fileObject } from '@/pages/admin/test';
+import { InputDatePicker } from '../InputDatePicker/InputDatePicker';
 
-export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering; gData: Game }) => {
+export const AddTurneringSheet = ({
+  turnering,
+  gData,
+  sponsorData,
+}: {
+  turnering: Turnering;
+  gData: any;
+  sponsorData?: fileObject[];
+}) => {
   const [addTurnering, setAddTurnering] = useAtom(addTurneringAtom);
   const [showAddTurnering, setShowAddTurnering] = useAtom(showAddTurneringAtom);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [open, setOpen] = useState(false);
-  const [chosenGame, setChosenGame] = useState({});
-  const [selectedTime, setSelectedTime] = useState();
+  const [chosenGame, setChosenGame] = useState<Game | null>(null);
+  const [sponsors, setSponsors] = useAtom(sponsorsAtom);
   const formRef = useRef(null);
+
+  console.log('sponsorData shieeet ', sponsorData && sponsorData);
 
   console.log('edit', turnering);
 
@@ -58,7 +70,6 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering; 
     reset,
   } = useForm<Turnering>({
     defaultValues: {
-      /*  id: uuidv4(), */
       dato: addTurnering?.dato,
       tilmelding: addTurnering?.tilmelding,
       gebyr: addTurnering?.gebyr,
@@ -69,14 +80,17 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering; 
       premie: addTurnering?.premie,
       beskrivelse: addTurnering?.beskrivelse,
       subheader: addTurnering?.subheader,
-      sponsorNavn: addTurnering?.sponsorNavn,
-      sponsorBillede: addTurnering?.sponsorBillede,
+      sponsorer: sponsors,
     },
   });
 
   useEffect(() => {
     console.log(chosenGame);
   }, [chosenGame]);
+
+  useEffect(() => {
+    console.log('sponsors chosen', sponsors);
+  }, [sponsors]);
 
   /*  useEffect(() => {
     console.log('id value', getValues('id'));
@@ -92,14 +106,12 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering; 
     setValue('premie', addTurnering?.premie || '');
     setValue('beskrivelse', addTurnering?.beskrivelse || '');
     setValue('subheader', addTurnering?.subheader || '');
-    setValue('sponsorNavn', addTurnering?.sponsorNavn);
-    setValue('sponsorBillede', addTurnering?.sponsorBillede);
   }, [addTurnering, setValue]);
 
   const onSubmit: SubmitHandler<Turnering> = async turneringsData => {
-    /*   turneringsData.id === undefined && setValue('id', uuidv4()); */
-    /* getValues('id') === undefined && setValue('id', uuidv4()); */
     console.log('submittedData', turneringsData);
+
+    turneringsData.sponsorer = sponsors;
 
     const { data, error } = await supabase.from('turneringer').insert([turneringsData]).select();
 
@@ -116,19 +128,27 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering; 
     setTimeout(() => {
       setSubmitted(false);
       setShowAddTurnering(false);
-      setChosenGame('');
+      setChosenGame(null);
+      setSponsors([]);
       reset();
     }, 3000);
   };
 
   const handleClose = () => {
     setShowAddTurnering(false);
-    setChosenGame('');
+    setChosenGame(null);
   };
 
   const handleDaySelect = (date: Date) => {
     const dato = date.toISOString();
     setValue('dato', dato);
+
+    console.log('dato', dato);
+  };
+
+  const handleTilmeldingSelect = (date: Date) => {
+    const dato = date.toISOString();
+
     setValue('tilmelding', dato);
     console.log('dato', dato);
   };
@@ -160,7 +180,7 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering; 
                     aria-expanded={open}
                     className='w-full max-w-[350px] justify-between'
                   >
-                    {chosenGame !== '' ? chosenGame.title : 'Vælg et spil'}
+                    {chosenGame !== null ? chosenGame.title : 'Vælg et spil'}
                     <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
                   </Button>
                 </PopoverTrigger>
@@ -180,14 +200,14 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering; 
 
                               setValue('background_image', selectedGame.background_image);
                               setValue('spil', selectedGame.title);
-                              setChosenGame(selectedGame);
+                              setChosenGame(selectedGame as Game);
                               setOpen(false);
                             }}
                           >
                             <Check
                               className={cn(
                                 'mr-2 h-4 w-4',
-                                chosenGame.title === game.title ? 'opacity-100' : 'opacity-0'
+                                chosenGame?.title === game.title ? 'opacity-100' : 'opacity-0'
                               )}
                             />
                             {game.title}
@@ -198,7 +218,7 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering; 
                 </PopoverContent>
               </Popover>
 
-              {chosenGame.background_image && (
+              {chosenGame && chosenGame.background_image && (
                 <div>
                   <Image
                     src={chosenGame.background_image}
@@ -247,17 +267,16 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering; 
                   />
                 </div>
 
-                <div>
+                <div className='flex flex-col gap-1'>
                   <Label>Dato</Label>
 
-                  <DateTimePicker
-                    //@ts-ignore
-                    onOpen={e => {
-                      document.body.style.pointerEvents = 'auto';
-                    }}
-                    value={selectedTime}
-                    onChange={date => handleDaySelect(date)}
-                    className='pointer-events-auto overflow-scroll'
+                  <InputDatePicker onDateChange={formattedDate => handleDaySelect(formattedDate)} />
+                </div>
+                <div className='flex flex-col gap-1'>
+                  <Label>Tilmeldingsfrist</Label>
+
+                  <InputDatePicker
+                    onDateChange={formattedDate => handleTilmeldingSelect(formattedDate)}
                   />
                 </div>
 
@@ -295,12 +314,7 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering; 
 
                 <div>
                   <Label>Sponsorer</Label>
-                  <ControlledEditableField
-                    control={control}
-                    name='sponsorNavn'
-                    type='text'
-                    hasError={errors.sponsorNavn}
-                  />
+                  <Test sponsors1={sponsorData as fileObject[] | []} />
                 </div>
 
                 <div className='flex justify-end gap-3 mt-5'>
@@ -310,13 +324,11 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering; 
                     size='sm'
                   >
                     {submitting
-                      ? 'Gemmer ændringer...'
+                      ? 'Tilføjer turneringen...'
                       : submitted
-                      ? 'Ændringerne er blevet gemt'
-                      : 'Gem ændringer'}
+                      ? 'Turneringen er blevet tilføjet'
+                      : 'Tilføj turnering'}
                   </Button>
-
-                  {/*   <SletSpil /> */}
                 </div>
               </form>
             </SheetHeader>

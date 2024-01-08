@@ -9,6 +9,7 @@ export interface Result {
 }
 
 export interface Game extends Result {
+  map(arg0: (game: Game) => import('react').JSX.Element): import('react').ReactNode;
   title: string;
   platforms: Array<{ name: string; value: number }>;
   description: string;

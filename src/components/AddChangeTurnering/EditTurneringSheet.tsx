@@ -17,6 +17,8 @@ import ControlledEditableField from '@/components/EditableInputField/ControlledE
 import ControlledEditableTextarea from '@/components/ControlledEditableTextArea/ControlledEditableTextarea';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import { InputDatePicker } from '../InputDatePicker/InputDatePicker';
+import { SletTurnering } from './SletTurnering';
 
 export const EditTurneringSheet = (turnering: Turnering) => {
   const [editTurnering, setEditTurnering] = useAtom(editTurneringAtom);
@@ -37,7 +39,7 @@ export const EditTurneringSheet = (turnering: Turnering) => {
     register,
   } = useForm<Turnering>({
     defaultValues: {
-      id: editTurnering?.id || turnering?.id,
+      id: editTurnering.id,
       dato: editTurnering?.dato,
       tilmelding: editTurnering?.tilmelding,
       gebyr: editTurnering?.gebyr,
@@ -70,7 +72,7 @@ export const EditTurneringSheet = (turnering: Turnering) => {
     const { data, error } = await supabase
       .from('turneringer')
       .update([turneringsData])
-      .eq('id', turneringsData.id)
+      .eq('id', editTurnering.id)
       .select();
 
     queryClient.invalidateQueries({ queryKey: ['hydrate-turneringDBData'] });
@@ -91,6 +93,20 @@ export const EditTurneringSheet = (turnering: Turnering) => {
 
   const handleClose = () => {
     setShowEditTurnering(false);
+  };
+
+  const handleDaySelect = (date: Date) => {
+    const dato = date.toISOString();
+    setValue('dato', dato);
+
+    console.log('dato', dato);
+  };
+
+  const handleTilmeldingSelect = (date: Date) => {
+    const dato = date.toISOString();
+
+    setValue('tilmelding', dato);
+    console.log('dato', dato);
   };
 
   return (
@@ -152,6 +168,19 @@ export const EditTurneringSheet = (turnering: Turnering) => {
                 />
               </div>
 
+              <div className='flex flex-col gap-1'>
+                <Label>Dato</Label>
+
+                <InputDatePicker onDateChange={formattedDate => handleDaySelect(formattedDate)} />
+              </div>
+              <div className='flex flex-col gap-1'>
+                <Label>Tilmeldingsfrist</Label>
+
+                <InputDatePicker
+                  onDateChange={formattedDate => handleTilmeldingSelect(formattedDate)}
+                />
+              </div>
+
               <div>
                 <Label>Gebyr</Label>
                 <ControlledEditableField
@@ -162,6 +191,7 @@ export const EditTurneringSheet = (turnering: Turnering) => {
                   placeholder='Gebyr'
                 />
               </div>
+
               <div>
                 <Label>Format</Label>
                 <ControlledEditableField
@@ -197,7 +227,7 @@ export const EditTurneringSheet = (turnering: Turnering) => {
                     : 'Gem ændringer'}
                 </Button>
 
-                {/*   <SletSpil /> */}
+                <SletTurnering />
               </div>
             </form>
           </SheetHeader>
