@@ -7,7 +7,7 @@ export default function Document() {
         <title>Next Level Gaming: Danmarks Førende Gaming Center</title>
         <meta
           name='description'
-          content='Next level er din netcafe., hvor du kan komme og hænge ud samt bruge tid med dine venner. Next level afholder også turneringer og arrangementer for både børn og voksne
+          content='Next level er din netcafe, hvor du kan komme og hænge ud samt bruge tid med dine venner. Next level afholder også turneringer og arrangementer for både børn og voksne.
         '
         ></meta>
         <link
