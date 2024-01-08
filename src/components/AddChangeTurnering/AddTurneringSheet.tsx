@@ -32,7 +32,7 @@ import { da } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Game } from '@/Types/gamelist';
 
-export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering }) => {
+export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering; gData: Game }) => {
   const [addTurnering, setAddTurnering] = useAtom(addTurneringAtom);
   const [showAddTurnering, setShowAddTurnering] = useAtom(showAddTurneringAtom);
   const [submitting, setSubmitting] = useState(false);
@@ -69,6 +69,8 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering }
       premie: addTurnering?.premie,
       beskrivelse: addTurnering?.beskrivelse,
       subheader: addTurnering?.subheader,
+      sponsorNavn: addTurnering?.sponsorNavn,
+      sponsorBillede: addTurnering?.sponsorBillede,
     },
   });
 
@@ -90,6 +92,8 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering }
     setValue('premie', addTurnering?.premie || '');
     setValue('beskrivelse', addTurnering?.beskrivelse || '');
     setValue('subheader', addTurnering?.subheader || '');
+    setValue('sponsorNavn', addTurnering?.sponsorNavn);
+    setValue('sponsorBillede', addTurnering?.sponsorBillede);
   }, [addTurnering, setValue]);
 
   const onSubmit: SubmitHandler<Turnering> = async turneringsData => {
@@ -169,7 +173,7 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering }
                         gData.map((game: Game) => (
                           <CommandItem
                             key={game.id}
-                            value={game}
+                            value={game.title}
                             onSelect={() => {
                               const selectedGame = game;
                               console.log('Selected Game:', selectedGame);
@@ -247,6 +251,7 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering }
                   <Label>Dato</Label>
 
                   <DateTimePicker
+                    //@ts-ignore
                     onOpen={e => {
                       document.body.style.pointerEvents = 'auto';
                     }}
@@ -285,6 +290,16 @@ export const AddTurneringSheet = ({ turnering, gData }: { turnering: Turnering }
                     type='text'
                     hasError={errors.premie}
                     placeholder='Premie'
+                  />
+                </div>
+
+                <div>
+                  <Label>Sponsorer</Label>
+                  <ControlledEditableField
+                    control={control}
+                    name='sponsorNavn'
+                    type='text'
+                    hasError={errors.sponsorNavn}
                   />
                 </div>
 

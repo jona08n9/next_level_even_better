@@ -24,6 +24,8 @@ export interface Turnering {
   beskrivelse: string;
   tilmelding_open: boolean;
   subheader: string;
+  sponsorNavn: string;
+  sponsorBillede: String;
 }
 
 const queryClient = new QueryClient();
