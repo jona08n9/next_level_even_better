@@ -138,15 +138,19 @@ export default function Booking({ john }: { john: Bookings[] }) {
       //console.log(e);
       const date = new Date(e);
       const Year = date.getFullYear();
+      console.log(Year);
       const Month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+      console.log(Month);
       const Day = String(date.getDate()).padStart(2, '0');
+      console.log(Day);
 
-      const FormattedDate = `${Number(Year)}-${Number(Month)}-${Number(Day)}`;
+      const FormattedDate = `${Year}-${Month}-${Day}`;
 
       setUserChoices((prevData) => ({
         ...prevData,
         date: FormattedDate,
       }));
+      console.log('F', FormattedDate);
       bookingTimes(FormattedDate);
       editBookedTimes('', 0, BookingTypes.ClearAll);
     }
@@ -158,8 +162,11 @@ export default function Booking({ john }: { john: Bookings[] }) {
       john.find((booking) => booking.date === chosenDate)
     );
 
-    console.log(john);
-    console.log(matchingDate);
+    // console.log(new Date(john[1].date));
+    // console.log(new Date(chosenDate));
+    // console.log(john[1].date);
+    // console.log(chosenDate);
+    // console.log(matchingDate);
     if (!matchingDate) {
       setBookingDateTimes(timeSlots);
       console.log('!matchingDate, 171');
@@ -535,10 +542,13 @@ export default function Booking({ john }: { john: Bookings[] }) {
     disabledDays.push(pastDays());
     disabledDays.push(futureDays(numberOfDays));
     if (john.length > 0) {
-      console.log('1');
+      // console.log('1');
       for (let i = 0; i < john.length; i++) {
         const date = john[i].date;
         const inputDate = new Date(date);
+
+        // console.log(date);
+        // console.log(inputDate);
 
         // Get the current date
         const currentDate = new Date();
@@ -549,16 +559,17 @@ export default function Booking({ john }: { john: Bookings[] }) {
 
         // Check if the inputDate is between currentDate and futureDate
         if (inputDate >= currentDate && inputDate <= futureDate && userChoices?.amount !== undefined) {
-          console.log('2');
+          // console.log('2');
+          // console.log(john[1]);
           const PCS: PCObjects = {
             PC1: john[i].PC1,
             PC2: john[i].PC2,
-            PC3: john[i].PC1,
-            PC4: john[i].PC1,
-            PC5: john[i].PC1,
+            PC3: john[i].PC3,
+            PC4: john[i].PC4,
+            PC5: john[i].PC5,
           };
 
-          console.log('PCS', PCS);
+          // console.log('PCS', PCS);
 
           // Create a new array to store the results
           const resultArray: BookingTimeSlot[] = [];
@@ -571,7 +582,9 @@ export default function Booking({ john }: { john: Bookings[] }) {
               // Find the corresponding entry in the resultArray or create a new one
               const resultEntry: BookingTimeSlot | undefined = resultArray.find((item) => item.time === entry.time);
               if (resultEntry) {
-                console.log('entry', entry);
+                // console.log('inputDate', inputDate);
+                // console.log('PCS[pc]', PCS[pc]);
+                // console.log('entry', entry);
                 // If the entry exists, update the count based on the booked status
                 if (entry.booked) {
                   resultEntry.bookedCount = (resultEntry.bookedCount || 0) + 1;
@@ -587,13 +600,13 @@ export default function Booking({ john }: { john: Bookings[] }) {
             }
           }
 
-          console.log('resultArray', resultArray);
+          // console.log('resultArray', resultArray);
           const PCLedigeTider = resultArray.some((slot, index) => {
             //@ts-ignore
-            const maxPC = 5 - userChoices?.amount;
+            const maxPC = 6 - userChoices?.amount;
 
             if (index < resultArray.length && slot.bookedCount !== undefined) {
-              console.log('3');
+              // console.log('3');
               const nextSlot = resultArray[index + 1];
               //@ts-ignore
               // console.log(slot.bookedCount < maxPC && nextSlot.bookedCount < maxPC);
@@ -602,13 +615,13 @@ export default function Booking({ john }: { john: Bookings[] }) {
             }
             // return false;
           });
-          console.log('resultArray2', resultArray);
+          // console.log('resultArray2', resultArray);
           // console.log('PCLedigeTider', PCLedigeTider);
           if (PCLedigeTider === true) {
-            console.log('4');
+            // console.log('4');
             //console.log('ledige tider', PCLedigeTider);
           } else {
-            console.log('5');
+            // console.log('5');
             //console.log('ledige tider?', PCLedigeTider);
             // //console.log(new Date(bookings[i].date));
             disabledDays.push(new Date(john[i].date));
@@ -617,7 +630,8 @@ export default function Booking({ john }: { john: Bookings[] }) {
       }
     }
     // //console.log"disabledDays", disabledDays);
-    console.log(disabledDays);
+    console.log('bookingDateTimes', bookingDateTimes);
+
     return disabledDays;
   };
 
@@ -762,7 +776,7 @@ export default function Booking({ john }: { john: Bookings[] }) {
                     <div className='bg-contrastCol md:mt-8 p-4 lg:block'>
                       <h4 className='mt-0 flex flex-row align-middle gap-x-2'>
                         <IoTime className='inline-block mt-0.4' />
-                        <span>Antal timer</span>
+                        <span onClick={() => console.log(bookingDateTimes)}>Antal timer</span>
                         {/* <button className='p-4 border border-white ' onClick={() => //console.log(bookTimes)}>
                         Check Booking Status
                       </button>
@@ -834,7 +848,7 @@ export default function Booking({ john }: { john: Bookings[] }) {
                       <div className=' timeslots flex gap-2 flex-wrap mt-3'>
                         {bookingDateTimes.map((time: BookingTimeSlot, index: number) => (
                           <div className='relative flex justify-between gap-2 flex-wrap mt-3'>
-                            {time.booked ? (
+                            {time.booked || (userChoices.amount !== undefined && userChoices.amount !== null && time.bookedCount !== undefined && userChoices?.amount > 5 - time?.bookedCount) ? (
                               <BookedTimeSlot time={time} index={index} allTimes={bookingDateTimes} userChoices={userChoices} />
                             ) : (
                               //  <input type="checkbox" name="tid" id={time.time} key={index} className="absolute z-0 opacity-0 peer" defaultChecked={bTS.includes(index)} disabled={time.booked} />
