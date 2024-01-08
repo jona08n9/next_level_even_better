@@ -98,7 +98,7 @@ small {
   width: 100%;
 }
 
-.sponsorCards {
+#personalInfo .sponsorCards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 150px));
   align-items: end;
@@ -149,9 +149,12 @@ small {
 
   #bookingBlock > article {
     display: grid;
-    gap: 1rem;
     grid-template-columns: repeat(2, 1fr);
     margin-bottom: 48px;
+  }
+
+  #personalInfo > article:first-child {
+    padding-right: 1rem;
   }
 
   #bookingBlock > article > div,
