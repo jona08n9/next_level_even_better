@@ -1,4 +1,4 @@
-export interface GameCardRoot {
+/* export interface GameCardRoot {
   id: number;
   title: string;
   name: string;
@@ -8,7 +8,7 @@ export interface GameCardRoot {
   background_image: string;
   platforms: Array<{ name: string; value: number }>;
   tags: Array<{ name: string; value: number }>;
-}
+} */
 
 /* export type PlatformArr = Platform[];
 

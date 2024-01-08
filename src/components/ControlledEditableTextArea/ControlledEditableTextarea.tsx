@@ -23,7 +23,9 @@ const ControlledEditableTextarea = props => {
       className='relative'
     >
       <textarea
-        className='flex h-60 w-full rounded bg-contrastCol px-3 py-2 border-b-transparent border-b-2 text-sm file:border-0 transition ease-in duration-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-b-2 focus-visible:border-secondaryCol disabled:cursor-not-allowed disabled:opacity-50 resize-none'
+        className={`flex ${
+          props?.name === 'subheader' ? 'h-20 lg' : 'h-60'
+        }  w-full rounded bg-contrastCol px-3 py-2 border-b-transparent border-b-2 text-sm file:border-0 transition ease-in duration-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-b-2 focus-visible:border-secondaryCol disabled:cursor-not-allowed disabled:opacity-50 resize-none`}
         {...field}
         onChange={field.onChange}
         onFocus={e => setSelected(true)}

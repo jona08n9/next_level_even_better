@@ -1,29 +1,29 @@
 import { Layout } from '@/Layout';
 import { RelatedContact } from '../../components/RelatedContact/RelatedContact';
 import { Hero } from '@/modules/Hero/Hero';
-import { Accordion } from '@radix-ui/react-accordion';
-import { Accordions } from '@/components/Accordion/Accordion';
-import { Button } from '@/components/Button/Button';
+
 import Head from 'next/head';
 import { supabase } from '../../../utils/supabaseClient';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TurneringCards } from '../../components/Cards/TurneringCards';
-import { Card } from '@/components/Cards/Card';
-import TurneringKort from '@/components/Cards/TurneringKort';
+
+import { Sponsor } from '../admin/test';
 
 export interface Turnering {
-  id: number;
+  id: string;
   dato: string;
   tilmelding: string;
   gebyr: number;
   eventNavn: string;
   background_image: string;
-  subheader: string;
+
   format: string;
   spil: string;
   premie: string;
   beskrivelse: string;
   tilmelding_open: boolean;
+  subheader: string;
+  sponsorer: Sponsor[];
 }
 
 const queryClient = new QueryClient();
@@ -37,9 +37,7 @@ export default function Turneringer() {
   return (
     <QueryClientProvider client={queryClient}>
       <Head>
-        <title>
-          Spændende Gaming Turneringer hos Next Level Gaming: Vis Din Færdighed
-        </title>
+        <title>Spændende Gaming Turneringer hos Next Level Gaming: Vis Din Færdighed</title>
         <meta
           name='description'
           content='Deltag i Next Level Gamings episke gaming turneringer. Fra League of Legends til Fortnite, vi har turneringer for alle populære spil. Perfekt for konkurrencedygtige spillere, der vil teste deres færdigheder og vinde præmier. Se vores tidsplan og tilmeld dit hold til vores næste store event.'
@@ -62,53 +60,9 @@ export default function Turneringer() {
             <article className='flex justify-center'>
               <div className='spacer w-full'>
                 <h2>
-                  Find din næste{' '}
-                  <span className='text-accentCol'>turnering</span>
+                  Find din næste <span className='text-accentCol'>turnering</span>
                 </h2>
                 <p className='mb-10'>Se de kommende turneringer nedenfor.</p>
-
-                {/*  <Accordions
-                  items={[
-                    {
-                      item: {
-                        itemHeader: 'League of Legends 06 - 07/01/24 ',
-                        itemContent:
-                          'Den ultimative league of legends turnering. Store præmier fra Shark Gaming, BenQ og Logitech. ',
-                        children: [
-                          <span>
-                            <br />
-                            <Button link='/om-os/kontakt?turnering'>Tilmed dit hold</Button>
-                          </span>,
-                        ],
-                      },
-                    },
-                    {
-                      item: {
-                        itemHeader: 'Counter-Strike 2 03 - 04/02/24 ',
-                        itemContent:
-                          'Den ultimative Counter-Strike 2 turnering. Store præmier fra Shark Gaming, BenQ og Logitech. ',
-                        children: [
-                          <span>
-                            <br />
-                            <Button link='/om-os/kontakt?turnering'>Tilmed dit hold</Button>
-                          </span>,
-                        ],
-                      },
-                    },
-                    {
-                      item: {
-                        itemHeader: 'Fortnite 13 - 14/04/24 ',
-                        itemContent: 'Den ultimative Fortnite turnering. Store præmier fra Shark Gaming, BenQ og Logitech. ',
-                        children: [
-                          <span>
-                            <br />
-                            <Button link='/om-os/kontakt?turnering'>Tilmed dit hold</Button>
-                          </span>,
-                        ],
-                      },
-                    },
-                  ]}
-                /> */}
 
                 <div className='grid gap-4 lg:grid-cols-3 md:grid-cols-2'>
                   <TurneringCards />

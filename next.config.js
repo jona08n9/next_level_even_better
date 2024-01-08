@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['media.rawg.io'],
+    domains: ['media.rawg.io', 'zwcshwxjwoffkdrdvbtp.supabase.co'],
     remotePatterns: [
       {
         protocol: 'https',

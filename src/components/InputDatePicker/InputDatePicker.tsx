@@ -7,14 +7,10 @@ import { FaCalendar } from 'react-icons/fa';
 import { cn } from '../../lib/utils';
 import { Button } from '../../components/ui/button';
 import { Calendar } from '../../components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '../../components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/popover';
 
 interface InputDatePickerProps {
-  onDateChange: (value: string) => void;
+  onDateChange: (value: Date) => void;
 }
 
 export function InputDatePicker({ onDateChange }: InputDatePickerProps) {
@@ -23,13 +19,11 @@ export function InputDatePicker({ onDateChange }: InputDatePickerProps) {
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
-      const formattedDate = format(selectedDate, 'dd-MM-yyyy');
       setDate(selectedDate);
       setOpen(false);
-      onDateChange(formattedDate);
+      onDateChange(selectedDate);
     } else {
       setDate(undefined);
-      onDateChange(''); // Change this line based on your requirements
     }
   };
 
