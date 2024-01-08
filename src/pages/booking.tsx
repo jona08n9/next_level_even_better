@@ -26,7 +26,6 @@ import { bookingCompleteAtom } from '@/states/store';
 import { useAtom } from 'jotai';
 import { BookingRecieved } from '@/modules/BookingRecieved/bookingRecieved';
 import { useRouter } from 'next/router';
-import { log } from 'console';
 import Head from 'next/head';
 
 export async function getServerSideProps() {
@@ -75,22 +74,17 @@ export default function Booking({ john }: { john: Bookings[] }) {
       router.events.off('routeChangeComplete', handleRouteChange);
     };
   }, [router.events]);
+
   useEffect(() => {
     if (bookingRef.current && userChoices?.startTime?.index !== undefined && userChoices?.amount && userChoices.date) {
       setTimeout(() => {
         //@ts-ignore
         bookingRef.current.scrollIntoView({ behavior: 'smooth' });
       }, 425);
-      //console.log('1');
-      //console.log(userChoices.startTime);
-      //console.log(userChoices.endTime);
     } else if (timeRef.current && userChoices?.amount && userChoices.date && userChoices?.startTime?.index === undefined && userChoices?.endTime?.index === undefined && timeChosen.index === undefined) {
       timeRef.current.scrollIntoView({ behavior: 'smooth' });
-      //console.log('2');
     } else if (dateRef.current && userChoices?.amount && userChoices?.startTime?.index === undefined && timeChosen.index === undefined) {
       dateRef.current?.scrollIntoView({ behavior: 'smooth' });
-      //console.log('3');
-      //console.log(userChoices.startTime);
     }
   }, [userChoices]);
 
@@ -124,9 +118,9 @@ export default function Booking({ john }: { john: Bookings[] }) {
         setAmountValue('');
       }
     } else {
-      //console.log('HER5');
       setOpenAmount(true);
     }
+    console.log('amountChosen', amountChosen);
   };
 
   const handleDateChange = (e: string) => {
@@ -164,10 +158,14 @@ export default function Booking({ john }: { john: Bookings[] }) {
       john.find((booking) => booking.date === chosenDate)
     );
 
+    console.log(john);
+    console.log(matchingDate);
     if (!matchingDate) {
       setBookingDateTimes(timeSlots);
+      console.log('!matchingDate, 171');
       return;
     }
+    console.log('matchingDate, 174');
     //@ts-ignore
     const dateBooking = john.find((booking) => booking.date === chosenDate);
     const PCS: PCObjects = {
@@ -184,6 +182,7 @@ export default function Booking({ john }: { john: Bookings[] }) {
       // Iterate over each entry for the current PC
       // @ts-ignore
       for (const entry of PCS[pc]) {
+        console.log(entry);
         // Find the corresponding entry in the resultArray or create a new one
         const resultEntry: BookingTimeSlot | undefined = availibleTimes.find((item) => item.time === entry.time);
 
@@ -227,7 +226,7 @@ export default function Booking({ john }: { john: Bookings[] }) {
         }
       }
     }
-
+    console.log('availibleTimes', availibleTimes);
     setBookingDateTimes(availibleTimes);
   }
 
@@ -535,84 +534,90 @@ export default function Booking({ john }: { john: Bookings[] }) {
 
     disabledDays.push(pastDays());
     disabledDays.push(futureDays(numberOfDays));
-    // @ts-ignore
-    disabledDays.push(BookedDays(numberOfDays, john));
+    if (john.length > 0) {
+      console.log('1');
+      for (let i = 0; i < john.length; i++) {
+        const date = john[i].date;
+        const inputDate = new Date(date);
 
-    function BookedDays(days: number, bookings: Bookings[]) {
-      if (bookings.length > 0) {
-        for (let i = 0; i < bookings.length; i++) {
-          const date = bookings[i].date;
-          const inputDate = new Date(date);
+        // Get the current date
+        const currentDate = new Date();
 
-          // Get the current date
-          const currentDate = new Date();
+        // Calculate the date 14 days in the future
+        const futureDate = new Date();
+        futureDate.setDate(currentDate.getDate() + numberOfDays);
 
-          // Calculate the date 14 days in the future
-          const futureDate = new Date();
-          futureDate.setDate(currentDate.getDate() + days);
+        // Check if the inputDate is between currentDate and futureDate
+        if (inputDate >= currentDate && inputDate <= futureDate && userChoices?.amount !== undefined) {
+          console.log('2');
+          const PCS: PCObjects = {
+            PC1: john[i].PC1,
+            PC2: john[i].PC2,
+            PC3: john[i].PC1,
+            PC4: john[i].PC1,
+            PC5: john[i].PC1,
+          };
 
-          // Check if the inputDate is between currentDate and futureDate
-          if (inputDate >= currentDate && inputDate <= futureDate && userChoices?.amount !== undefined) {
-            // //console.log"The date is between today and the latest possible day in the future.");
-            const PCS: PCObjects = {
-              PC1: bookings[i].PC1,
-              PC2: bookings[i].PC2,
-              PC3: bookings[i].PC1,
-              PC4: bookings[i].PC1,
-              PC5: bookings[i].PC1,
-            };
-            // //console.logPCS);
+          console.log('PCS', PCS);
 
-            // Create a new array to store the results
-            const resultArray: BookingTimeSlot[] = [];
+          // Create a new array to store the results
+          const resultArray: BookingTimeSlot[] = [];
 
-            // Iterate over each key in the inputObject
-            for (const pc in PCS) {
-              // Iterate over each entry for the current PC
-              // @ts-ignore
-              for (const entry of PCS[pc]) {
-                // Find the corresponding entry in the resultArray or create a new one
-                const resultEntry: BookingTimeSlot | undefined = resultArray.find((item) => item.time === entry.time);
-                if (resultEntry) {
-                  // If the entry exists, update the count based on the booked status
-                  if (entry.booked) {
-                    resultEntry.bookedCount = (resultEntry.bookedCount || 0) + 1;
-                  }
-                } else {
-                  // If the entry doesn't exist, create a new one
-                  const newEntry = {
-                    time: entry.time,
-                    bookedCount: entry.booked ? 1 : 0,
-                  };
-                  resultArray.push(newEntry);
+          // Iterate over each key in the inputObject
+          for (const pc in PCS) {
+            // Iterate over each entry for the current PC
+            // @ts-ignore
+            for (const entry of PCS[pc]) {
+              // Find the corresponding entry in the resultArray or create a new one
+              const resultEntry: BookingTimeSlot | undefined = resultArray.find((item) => item.time === entry.time);
+              if (resultEntry) {
+                console.log('entry', entry);
+                // If the entry exists, update the count based on the booked status
+                if (entry.booked) {
+                  resultEntry.bookedCount = (resultEntry.bookedCount || 0) + 1;
                 }
+              } else {
+                // If the entry doesn't exist, create a new one
+                const newEntry = {
+                  time: entry.time,
+                  bookedCount: entry.booked ? 1 : 0,
+                };
+                resultArray.push(newEntry);
               }
             }
+          }
 
-            // //console.log"resultArray", resultArray);
-            const PCLedigeTider = resultArray.some((slot, index) => {
+          console.log('resultArray', resultArray);
+          const PCLedigeTider = resultArray.some((slot, index) => {
+            //@ts-ignore
+            const maxPC = 5 - userChoices?.amount;
+
+            if (index < resultArray.length && slot.bookedCount !== undefined) {
+              console.log('3');
+              const nextSlot = resultArray[index + 1];
               //@ts-ignore
-              const maxPC = 6 - userChoices?.amount;
-              if (index < resultArray.length - 1 && slot.bookedCount !== undefined) {
-                const nextSlot = resultArray[index + 1];
-                //@ts-ignore
-                return slot.bookedCount < maxPC && nextSlot.bookedCount < maxPC;
-              }
-              return false;
-            });
-            if (PCLedigeTider === true) {
-              //console.log('ledige tider', PCLedigeTider);
-            } else {
-              //console.log('ledige tider?', PCLedigeTider);
-              // //console.log(new Date(bookings[i].date));
-              disabledDays.push(new Date(bookings[i].date));
+              // console.log(slot.bookedCount < maxPC && nextSlot.bookedCount < maxPC);
+              //@ts-ignore
+              return slot.bookedCount < maxPC && nextSlot.bookedCount < maxPC;
             }
+            // return false;
+          });
+          console.log('resultArray2', resultArray);
+          // console.log('PCLedigeTider', PCLedigeTider);
+          if (PCLedigeTider === true) {
+            console.log('4');
+            //console.log('ledige tider', PCLedigeTider);
+          } else {
+            console.log('5');
+            //console.log('ledige tider?', PCLedigeTider);
+            // //console.log(new Date(bookings[i].date));
+            disabledDays.push(new Date(john[i].date));
           }
         }
       }
     }
     // //console.log"disabledDays", disabledDays);
-
+    console.log(disabledDays);
     return disabledDays;
   };
 
