@@ -1,4 +1,4 @@
-import { useQueries } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQueries } from '@tanstack/react-query';
 import { fetchDBGameData } from './spil';
 import TurneringKort from '@/components/Cards/TurneringKort';
 import { useAtom } from 'jotai';
