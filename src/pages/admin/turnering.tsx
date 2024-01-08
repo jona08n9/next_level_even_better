@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 import TurneringCards from '@/components/Cards/TurneringCards';
 import { showAddTurneringAtom } from '@/states/store';
 import { Skeleton } from '@/components/ui/skeleton';
-import TurneringsListe from './TurneringsListe';
+import TurneringsListe from '../../components/AddChangeTurnering/TurneringsListe';
 import { Button } from '@/components/Button/Button';
 import { useAtom } from 'jotai';
 import { PlusCircle } from 'lucide-react';

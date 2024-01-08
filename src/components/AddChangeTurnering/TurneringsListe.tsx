@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider, useQueries } from '@tanstack/react-query';
-import { fetchDBGameData } from './spil';
+import { fetchDBGameData } from '../../pages/admin/spil';
 import TurneringKort from '@/components/Cards/TurneringKort';
 import { useAtom } from 'jotai';
 import {
@@ -8,11 +8,11 @@ import {
   showAddTurneringAtom,
   showEditTurneringAtom,
 } from '@/states/store';
-import { EditTurneringSheet } from '../../components/AddChangeTurnering/EditTurneringSheet';
-import { fetchDBTurneringData } from './turnering';
+import { EditTurneringSheet } from './EditTurneringSheet';
+import { fetchDBTurneringData } from '../../pages/admin/turnering';
 
-import { AddTurneringSheet } from '../../components/AddChangeTurnering/AddTurneringSheet';
-import { fetchSponsors, fileObject } from './test';
+import { AddTurneringSheet } from './AddTurneringSheet';
+import { fetchSponsors, fileObject } from '../../pages/admin/test';
 
 const TurneringsListe = () => {
   const [editTurnering, setEditTurnering] = useAtom(editTurneringAtom);
