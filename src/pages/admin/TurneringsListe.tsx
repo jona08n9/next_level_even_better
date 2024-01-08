@@ -65,3 +65,5 @@ export const TurneringsListe = () => {
     </div>
   );
 };
+
+export default TurneringsListe;
